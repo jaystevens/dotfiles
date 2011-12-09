@@ -1,7 +1,6 @@
 [user]
-	name = Ryan Tomayko
-	email = rtomayko@gmail.com
-
+	name = Jay Stevens
+	email = jay@wizardofthenet.com
 
 [alias]
 	browse       = !hub browse
@@ -27,10 +26,21 @@
 	st           = status
 	sa           = status -sb --ignore-submodules=untracked
 
+	br			 = branch
+	co			 = checkout
+	unadd		 = reset HEAD
+	# show a log without the formating, occasionaly handy for c&p
+	rawlog = log --format=\"format:commit %H%nAuthor:%an%n%n%B%n\"
+	# not useful itself, but handy to remember for use in scripts
+	thisbranch = rev-parse --abbrev-ref HEAD
+	# url of origin, about 99% of what I use git config --list for
+	cloneurl = config --get remote.origin.url
+
 [core]
 	filemode = true
 	logallrefupdates = true
 	whitespace = space-before-tab, trailing-space
+	preloadindex = true
 
 [help]
 	browser = open
@@ -44,12 +54,6 @@
 
 [push]
 	default = current
-
-[sendemail]
-	smtpserver = smtp.gmail.com
-	smtpserverport = 587
-	smtpencryption = tls
-	smtpuser = rtomayko@gmail.com
 
 [color]
 	ui = auto
@@ -70,6 +74,9 @@
 	added = yellow
 	changed = green bold
 	untracked = blue bold
+
+[http]
+  sslVerify = no
 
 [hub]
 	http-clone = true
