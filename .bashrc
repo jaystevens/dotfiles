@@ -41,7 +41,11 @@ unset MAILCHECK
 ulimit -S -c 0
 
 # default umask
-umask 0022
+if [ "$USER" = dataman ]; then
+    umask 0000
+else
+    umask 0022
+fi
 
 # ----------------------------------------------------------------------
 # PATH
@@ -54,6 +58,28 @@ PATH="/usr/local/bin:$PATH"
 # put ~/bin on PATH if you have it
 test -d "$HOME/bin" &&
 PATH="$HOME/bin:$PATH"
+
+# put StorNext in path if you have it
+test -d "/usr/cvfs/bin" &&
+PATH="/usr/cvfs/bin:$PATH"
+
+# put Bright Systems in path if you have it
+test -d "/usr/bsi/bin" &&
+PATH="/usr/cvfs/bin:$PATH"
+
+# put mti tools in path if you have it
+test -d "/usr/mti/bin" &&
+PATH="/usr/mti/bin:$PATH"
+
+if [ "$USER" = dataman ]; then
+    # put Atempo in path if you have it
+    test -e "/usr/Atempo/tina/.tina.sh" &&
+    source /usr/Atempo/tina/.tina.sh
+fi
+
+# put gcc-4.6.2 in lib path if you have it
+test -d "/usr/local/gcc-4.6.2/lib64" &&
+LD_LIBRARY_PATH="/usr/local/gcc-4.6.2/lib64:$LD_LIBRARY_PATH"
 
 # ----------------------------------------------------------------------
 # ENVIRONMENT CONFIGURATION
@@ -202,6 +228,13 @@ fi
 alias du1='du -h --max-depth=1'
 alias fn='find . -name'
 alias hi='history | tail -20'
+alias rsyncmti='/usr/local/bin/rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
+# dataman user alias
+if [ "$USER" = dataman ]; then
+    alias chmod='sudo /bin/chmod'
+    alias chgrp='sudo /bin/chgrp'
+    alias chown='sudo /bin/chown'
+fi
 
 # ----------------------------------------------------------------------
 # BASH COMPLETION
@@ -235,7 +268,7 @@ _expand() {
 # ----------------------------------------------------------------------
 
 # we always pass these to ls(1)
-LS_COMMON="-hBG"
+LS_COMMON="-hBGl --color"
 
 # if the dircolors utility is available, set that up to
 dircolors="$(type -P gdircolors dircolors | head -1)"
@@ -259,6 +292,9 @@ alias l.="ls -d .*"
 # --------------------------------------------------------------------
 # MISC COMMANDS
 # --------------------------------------------------------------------
+
+# fix git ssh askpass on cmdline
+unset SSH_ASKPASS
 
 # push SSH public key to another box
 push_ssh_cert() {
@@ -342,6 +378,7 @@ test -r ~/.shenv &&
 # condense PATH entries
 PATH=$(puniq $PATH)
 MANPATH=$(puniq $MANPATH)
+LD_LIBRARY_PATH=$(puniq $LD_LIBRARY_PATH)
 
 # Use the color prompt by default when interactive
 test -n "$PS1" &&
