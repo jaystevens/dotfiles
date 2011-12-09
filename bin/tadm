@@ -1,0 +1,4 @@
+#!/bin/bash
+
+source /usr/Atempo/tina/.tina.sh
+tina_adm
