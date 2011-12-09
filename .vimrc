@@ -281,3 +281,9 @@ let g:rails_menu=2
 " make file executable
 command -nargs=* Xe !chmod +x <args>
 command! -nargs=0 Xe !chmod +x %
+
+" --------------------------------------------------------------------------
+" rails.vim
+" --------------------------------------------------------------------------
+
+let g:pydiction_location = '$HOME/.vim/pydiction/complete-dict'
