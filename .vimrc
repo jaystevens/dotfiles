@@ -144,6 +144,12 @@ inoremap <Up> <C-o>gk
 cnoremap <Left> <Space><BS><Left>
 cnoremap <Right> <Space><BS><Right>
 
+" Toggle line numbers and fold column for easy copying:
+nnoremap <F2> :set nonumber!<CR>:set foldcolumn=0<CR>
+
+" Execute file being edited with <Shift> + e:
+map <buffer> <S-e> :w<CR>:!/usr/local/bin/python2.7 % <CR>
+
 " ----------------------------------------------------------------------------
 "  Auto Commands
 " ----------------------------------------------------------------------------
