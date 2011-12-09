@@ -28,8 +28,10 @@
 
 	br			 = branch
 	co			 = checkout
-	unadd		 = reset HEAD
-	# show a log without the formating, occasionaly handy for c&p
+  unadd		 = reset HEAD
+  # show log
+  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  # show a log without the formating, occasionaly handy for c&p
 	rawlog = log --format=\"format:commit %H%nAuthor:%an%n%n%B%n\"
 	# not useful itself, but handy to remember for use in scripts
 	thisbranch = rev-parse --abbrev-ref HEAD
