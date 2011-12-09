@@ -283,7 +283,7 @@ command -nargs=* Xe !chmod +x <args>
 command! -nargs=0 Xe !chmod +x %
 
 " --------------------------------------------------------------------------
-" rails.vim
+" pydiction.vim
 " --------------------------------------------------------------------------
 
 let g:pydiction_location = '$HOME/.vim/pydiction/complete-dict'
