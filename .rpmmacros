@@ -1,0 +1,6 @@
+%_topdir           %(echo $HOME)/rpmbuild
+
+%_smp_mflags    -j4
+
+# % _signature     %gpg
+# % _gpg_name      %rpmbuild <rpmbuild@example.com>
