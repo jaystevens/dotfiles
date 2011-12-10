@@ -384,7 +384,9 @@ test -r ~/.shenv &&
 # condense PATH entries
 PATH=$(puniq $PATH)
 MANPATH=$(puniq $MANPATH)
+
 LD_LIBRARY_PATH=$(puniq $LD_LIBRARY_PATH)
+export LD_LIBRARY_PATH
 
 # Use the color prompt by default when interactive
 test -n "$PS1" &&
