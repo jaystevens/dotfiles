@@ -234,7 +234,11 @@ alias du1='du -h --max-depth=1'
 alias fn='find . -name'
 alias hi='history | tail -20'
 alias rsyncmti='/usr/local/bin/rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
+
+# alias cvcp to work more like cp
+test -e "/usr/cvfs/bin/cvcp" && 
 alias cvcp='/usr/cvfs/bin/cvcp -t 8 -k 16777216 -xyz'
+
 # dataman user alias
 if [ "$USER" = dataman ]; then
     alias chmod='sudo /bin/chmod'
@@ -383,8 +387,9 @@ test -r ~/.shenv &&
 
 # condense PATH entries
 PATH=$(puniq $PATH)
+export PATH
 MANPATH=$(puniq $MANPATH)
-
+export MANPATH
 LD_LIBRARY_PATH=$(puniq $LD_LIBRARY_PATH)
 export LD_LIBRARY_PATH
 
