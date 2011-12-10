@@ -3,7 +3,10 @@
 # Grabs the latest version of Dropbox command line
 # and puts its in your HOME/bin.
 set -e
-# 32bit
-#cd ~ && wget -O - http://www.dropbox.com/download?plat=lnx.x86 | tar xzf -
-# 64bit
-cd ~ && wget -O - http://www.dropbox.com/download?plat=lnx.x86_64 | tar xzf -
+if [ `uname -m` = 'x86_64' ]; then
+    echo 64 bit
+    cd ~ && wget -O - http://www.dropbox.com/download?plat=lnx.x86_64 | tar xzf -
+else
+    echo not 64 bit
+    cd ~ && wget -O - http://www.dropbox.com/download?plat=lnx.x86 | tar xzf -
+fi
