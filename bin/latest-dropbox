@@ -1,0 +1,10 @@
+#!/bin/sh
+# Usage: latest-dropbox
+# Grabs the latest version of Dropbox CLI Script
+# and puts its in your HOME/bin.
+set -e
+curl -sLo ~/bin/dropbox1 https://www.dropbox.com/download?dl=packages/dropbox.py
+sed 's/#!\/usr\/bin\/python/#!\/bin\/env python/g' ~/bin/dropbox1 > ~/bin/dropbox
+rm -f ~/bin/dropbox1
+chmod 755 ~/bin/dropbox
+~/bin/dropbox

@@ -1,0 +1,9 @@
+#!/bin/sh
+# Usage: latest-dropboxd
+# Grabs the latest version of Dropbox command line
+# and puts its in your HOME/bin.
+set -e
+# 32bit
+#cd ~ && wget -O - http://www.dropbox.com/download?plat=lnx.x86 | tar xzf -
+# 64bit
+cd ~ && wget -O - http://www.dropbox.com/download?plat=lnx.x86_64 | tar xzf -
