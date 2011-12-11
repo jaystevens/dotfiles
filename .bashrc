@@ -242,6 +242,7 @@ test -e "/usr/cvfs/bin/cvcp" &&
 if [ "$USER" -ne root ]; then
     test -e "/usr/cvfs/bin/cvadmin" &&
         alias cvadmin='sudo /usr/cvfs/bin/cvadmin'
+fi
 
 # dataman user alias
 if [ "$USER" = dataman ]; then
