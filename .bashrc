@@ -239,7 +239,7 @@ alias rsyncmti='/usr/local/bin/rsync -avrh --progress --stats --inplace --whole-
 test -e "/usr/cvfs/bin/cvcp" && 
     alias cvcp='/usr/cvfs/bin/cvcp -t 8 -k 16777216 -xyz'
 
-if [ "$USER" -ne root ]; then
+if [ "$USER" != root ]; then
     test -e "/usr/cvfs/bin/cvadmin" &&
         alias cvadmin='sudo /usr/cvfs/bin/cvadmin'
 fi
