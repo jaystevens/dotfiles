@@ -237,7 +237,11 @@ alias rsyncmti='/usr/local/bin/rsync -avrh --progress --stats --inplace --whole-
 
 # alias cvcp to work more like cp
 test -e "/usr/cvfs/bin/cvcp" && 
-alias cvcp='/usr/cvfs/bin/cvcp -t 8 -k 16777216 -xyz'
+    alias cvcp='/usr/cvfs/bin/cvcp -t 8 -k 16777216 -xyz'
+
+if [ "$USER" -ne root ]; then
+    test -e "/usr/cvfs/bin/cvadmin" &&
+        alias cvadmin='sudo /usr/cvfs/bin/cvadmin'
 
 # dataman user alias
 if [ "$USER" = dataman ]; then
