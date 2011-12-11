@@ -275,9 +275,9 @@ test -z "$BASH_COMPLETION" && {
 }
 
 # override and disable tilde expansion
-_expand() {
-    return 0
-}
+#_expand() {
+#    return 0
+#}
 
 # ----------------------------------------------------------------------
 # LS AND DIRCOLORS
