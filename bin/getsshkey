@@ -1,0 +1,21 @@
+#!/bin/sh
+#   
+# add-known-hosts   
+# Add all possible SSH keys for the specified hosts to the file   
+# specified.  It's your responsibility to be sure that the keys   
+# found are, in fact, valid.   
+#   
+# Copyright 2003, Brian Hatch <bri [@] ifokr.org>   
+#  Released under the GPL      
+KNOWN_HOSTS=./ssh_known_hosts   
+SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=$KNOWN_HOSTS"      
+if [ $# -lt 1 ] ; then       
+    echo "Usage: $0 hostname [hostname ...]" >&2    
+    exit 1;   
+fi
+for host in "$@"
+do
+    ssh $host $SSH_ARGS -1 echo ''
+    ssh $host $SSH_ARGS -o'HostKeyAlgorithms=ssh-rsa' echo ''
+    ssh $host $SSH_ARGS -o'HostKeyAlgorithms=ssh-dss' echo ''
+done 
