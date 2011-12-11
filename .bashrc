@@ -235,10 +235,11 @@ alias fn='find . -name'
 alias hi='history | tail -20'
 alias rsyncmti='/usr/local/bin/rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
 
-# alias cvcp to work more like cp
+# make cvcp work more like cp -rvp, increase buffer
 test -e "/usr/cvfs/bin/cvcp" && 
-    alias cvcp='/usr/cvfs/bin/cvcp -t 8 -k 16777216 -xyz'
+    alias cvcp='/usr/cvfs/bin/cvcp -k 16777216 -xyz'
 
+# sudo cvadmin if not root
 if [ "$USER" != root ]; then
     test -e "/usr/cvfs/bin/cvadmin" &&
         alias cvadmin='sudo /usr/cvfs/bin/cvadmin'
@@ -274,9 +275,9 @@ test -z "$BASH_COMPLETION" && {
 }
 
 # override and disable tilde expansion
-_expand() {
-    return 0
-}
+#_expand() {
+#    return 0
+#}
 
 # ----------------------------------------------------------------------
 # LS AND DIRCOLORS
