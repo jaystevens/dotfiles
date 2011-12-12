@@ -61,7 +61,7 @@ set directory=$HOME/.vim/swap,.      " keep swp files under ~/.vim/swap
 " ---------------------------------------------------------------------------
 set ruler               " show the cursor position all the time
 set nolazyredraw        " turn off lazy redraw
-set number              " line numbers
+"set number              " line numbers
 set backspace=2         " allow backspacing over everything in insert mode
 set nostartofline       " don't jump to the start of line when scrolling
 
