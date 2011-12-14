@@ -245,6 +245,11 @@ if [ "$USER" != root ]; then
         alias cvadmin='sudo /usr/cvfs/bin/cvadmin'
 fi
 
+# if on fedora alias my rpmbuild cmd
+test -e "/etc/fedora-release" &&
+    alias rpmbuildjay="rpmbuild -bb --with baseonly --with firmware --without
+degubinfo --target=`uname -m1` ~/rpmbuild/SPECS/kernel.spec"
+
 # dataman user alias
 if [ "$USER" = dataman ]; then
     alias chmod='sudo /bin/chmod'
@@ -395,7 +400,7 @@ test -r ~/.shenv &&
 PATH=$(puniq $PATH)
 export PATH
 MANPATH=$(puniq $MANPATH)
-export MANPATH
+#export MANPATH
 LD_LIBRARY_PATH=$(puniq $LD_LIBRARY_PATH)
 export LD_LIBRARY_PATH
 
