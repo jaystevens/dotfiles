@@ -248,7 +248,7 @@ fi
 # if on fedora alias my rpmbuild cmd
 test -e "/etc/fedora-release" &&
     alias rpmbuildjay="rpmbuild -bb --with baseonly --with firmware --without
-degubinfo --target=`uname -m1` ~/rpmbuild/SPECS/kernel.spec"
+degubinfo --target=`uname -m` ~/rpmbuild/SPECS/kernel.spec"
 
 # dataman user alias
 if [ "$USER" = dataman ]; then
