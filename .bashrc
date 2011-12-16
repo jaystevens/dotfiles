@@ -13,6 +13,8 @@
 
 # readline config
 : ${INPUTRC=~/.inputrc}
+#complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh scp sftp
+#complete -W "$(echo `cat /etc/ssh/ssh_known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh scp sftp
 
 # ----------------------------------------------------------------------
 #  SHELL OPTIONS
