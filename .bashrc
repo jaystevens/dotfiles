@@ -289,7 +289,11 @@ test -z "$BASH_COMPLETION" && {
 # ----------------------------------------------------------------------
 
 # we always pass these to ls(1)
-LS_COMMON="-hBGl --color=auto"
+if [ "$UNAME" = Darwin ]; then
+    LS_COMMON="-hBGl"
+else
+    LS_COMMON="-hBGl --color=auto"
+fi
 
 # if the dircolors utility is available, set that up to
 dircolors="$(type -P gdircolors dircolors | head -1)"
