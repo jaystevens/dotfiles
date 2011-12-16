@@ -234,7 +234,11 @@ fi
 # ----------------------------------------------------------------------
 
 # disk usage with human sizes and minimal depth
-alias du1='du -h --max-depth=1'
+if [ "$UNAME" = Darwin ]; then
+    alias du1='du -h -d 1'
+else
+    alias du1='du -h --max-depth=1'
+fi
 alias fn='find . -name'
 alias hi='history | tail -20'
 alias rsyncmti='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
