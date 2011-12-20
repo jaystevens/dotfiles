@@ -244,7 +244,7 @@ fi
 alias fn='find . -name'
 alias hi='history | tail -20'
 alias rsyncmti='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
-alias wizmnt='sshfs -oCiper=arcfour root@wizardofthenet.com:/home/ghosttoast/www/www/'
+alias wizmnt='sshfs -o Ciper=arcfour root@wizardofthenet.com:/home/ghosttoast/www/www/'
 
 # make cvcp work more like cp -rvp, increase buffer
 test -e "/usr/cvfs/bin/cvcp" && 
