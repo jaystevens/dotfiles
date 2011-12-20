@@ -83,6 +83,22 @@ fi
 test -d "/usr/local/gcc-4.6.2/lib64" &&
 LD_LIBRARY_PATH="/usr/local/gcc-4.6.2/lib64:$LD_LIBRARY_PATH"
 
+# intel compiler
+if [ -e "/opt/intel/bin/compilervars.sh" ]; then
+    : ${MACHINE=$(uname -m)}
+    if [ "$MACHINE" = x86_64 ]; then
+        source /opt/intel/bin/compilervars.sh intel64
+    else
+        source /opt/intel/bin/compilervars.sh ia32
+    fi
+    export CC="icc"
+    export CXX="icpc"
+    export F77="ifort"
+    #export CFLAGS="-O3 -xP -ip"
+    #export CXXFLAGS="-O3 -xP -ip"
+    #export FFLAGS="-O3 -xP -ip"
+fi
+
 # ----------------------------------------------------------------------
 # ENVIRONMENT CONFIGURATION
 # ----------------------------------------------------------------------
