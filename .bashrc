@@ -94,9 +94,9 @@ if [ -e "/opt/intel/bin/compilervars.sh" ]; then
     export CC="icc"
     export CXX="icpc"
     export F77="ifort"
-    #export CFLAGS="-O3 -xP -ip"
-    #export CXXFLAGS="-O3 -xP -ip"
-    #export FFLAGS="-O3 -xP -ip"
+    export CFLAGS="-xSSSE3_ATOM"
+    export CXXFLAGS="-xSSSE3_ATOM"
+    export FFLAGS="-xSSSE3_ATOM"
 fi
 
 # ----------------------------------------------------------------------
