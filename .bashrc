@@ -227,6 +227,12 @@ if [ "$UNAME" = Darwin ]; then
         PATH="$PORTS/bin:$PORTS/sbin:$PATH"
         MANPATH="$PORTS/share/man:$MANPATH"
 
+        # make sure /usr/local is infront of /opt/local
+        test -d "/usr/local/bin" &&
+            PATH="/usr/local/bin:$PATH"
+        test -d "/usr/local/sbin" &&
+            PATH="/usr/local/sbin:$PATH"
+
         # nice little port alias
         alias port="sudo nice -n +18 $PORTS/bin/port"
     }
