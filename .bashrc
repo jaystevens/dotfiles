@@ -97,6 +97,7 @@ if [ -e "/opt/intel/bin/compilervars.sh" ]; then
     export CFLAGS="-xSSSE3_ATOM"
     export CXXFLAGS="-xSSSE3_ATOM"
     export FFLAGS="-xSSSE3_ATOM"
+    alias unseticc="unset CC;unset CXX;unset F77;unset CFLAGS;unset CXXFLAGS;unset FFLAGS"
 fi
 
 # ----------------------------------------------------------------------
