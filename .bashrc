@@ -290,6 +290,15 @@ if [ "$USER" = dataman ]; then
     alias chown='sudo /bin/chown'
 fi
 
+# ftp-srvr sudo alias
+if [ `uname -n` = "ftp-srvr.mti.ad" ]; then
+    alias addftp='sudo /usr/local/sbin/addftp'
+    alias modftp='sudo /usr/local/sbin/modftp'
+    alias rmftp='sudo /usr/local/sbin/rmftp'
+    alias ftpwho='sudo /usr/local/sbin/ftpwho'
+    alias pure-ftpwho='sudo /usr/local/sbin/pure-ftpwho'
+fi
+
 # ----------------------------------------------------------------------
 # BASH COMPLETION
 # ----------------------------------------------------------------------
