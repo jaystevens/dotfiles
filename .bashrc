@@ -168,7 +168,7 @@ ACK_PAGER_COLOR="$PAGER"
 # ----------------------------------------------------------------------
 
 function load_out() {
-if [ "$UNAME" = Darwin ]; then
+if [ `uname -s` = "Darwin" ]; then
     echo -n "$(uptime | sed -e "s/.*load averages: \(.*\...\) \(.*\...\) \(.*\...\).*/\1/" -e "s/ //g")"
 else
     echo -n "$(uptime | sed -e "s/.*load average: \(.*\...\), \(.*\...\), \(.*\...\).*/\1/" -e "s/ //g")"
@@ -219,7 +219,7 @@ prompt_color() {
 # MACOS X / DARWIN SPECIFIC
 # ----------------------------------------------------------------------
 
-if [ "$UNAME" = Darwin ]; then
+if [ `uname -s` = "Darwin" ]; then
     # put ports on the paths if /opt/local exists
     test -x /opt/local -a ! -L /opt/local && {
         PORTS=/opt/local
@@ -259,7 +259,7 @@ fi
 # ----------------------------------------------------------------------
 
 # disk usage with human sizes and minimal depth
-if [ "$UNAME" = Darwin ]; then
+if [ `uname -s` = "Darwin" ]; then
     alias du1='du -h -d 1'
 else
     alias du1='du -h --max-depth=1'
@@ -331,7 +331,7 @@ test -z "$BASH_COMPLETION" && {
 # ----------------------------------------------------------------------
 
 # we always pass these to ls(1)
-if [ "$UNAME" = Darwin ]; then
+if [ `uname -s` = "Darwin" ]; then
     LS_COMMON="-hBGl"
 else
     LS_COMMON="-hBGl --color=auto"
