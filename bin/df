@@ -42,6 +42,6 @@ for i in deleteme:
 
 for key in sorted(outdict.iterkeys()):
     outtxt += '%s' % outdict[key]
-
+outtxt = outtxt.rstrip('\n')
 print(outtxt)
     
