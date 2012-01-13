@@ -6,17 +6,41 @@ dfcmd = subprocess.Popen('/bin/df -Ph', stdout=subprocess.PIPE, stderr=subproces
 intxt = dfcmd.communicate()[0]
 intxt = intxt.split('\n')
 outtxt = ''
+outdict = {}
 
 for line in intxt:
     a = line.split()
     if len(a) > 0:
         a.remove(a[0])
+        alast = (len(a) - 1)
+        outtxt = ''
         for i in a:
             outtxt += '%s' % i
-            alast = (len(a) - 1)
             if i == a[alast]:
                 outtxt += '\n'
             else:
                 outtxt += '\t'
+        tmp = a[alast]
+        outdict[tmp] = outtxt
+
+outtxt = ''
+# put 'Mounted on' line at top
+try:
+    outtxt += outdict['on']
+    del outdict['on']
+except Exception as e:
+    pass
+
+# attempt to delete stupid values
+deleteme = [ 'shit', '/dev/shm' ]
+for i in deleteme:
+    try:
+        del outdict[i]
+    except Exception as e:
+        pass
+
+for key in sorted(outdict.iterkeys()):
+    outtxt += '%s' % outdict[key]
+
 print(outtxt)
     
