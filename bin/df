@@ -11,7 +11,7 @@ outdict = {}
 for line in intxt:
     a = line.split()
     if len(a) > 0:
-        if not (a[0] == 'tmpfs') and not (a[0] == 'devtmpfs'):
+        if not (a[0] == 'tmpfs') and not (a[0] == 'devtmpfs') and not (a[0] == 'udev'):
             a.remove(a[0])
             alast = (len(a) - 1)
             outtxt = ''
