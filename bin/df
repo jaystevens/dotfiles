@@ -11,17 +11,18 @@ outdict = {}
 for line in intxt:
     a = line.split()
     if len(a) > 0:
-        a.remove(a[0])
-        alast = (len(a) - 1)
-        outtxt = ''
-        for i in a:
-            outtxt += '%s' % i
-            if i == a[alast]:
-                outtxt += '\n'
-            else:
-                outtxt += '\t'
-        tmp = a[alast]
-        outdict[tmp] = outtxt
+        if not (a[0] == 'tmpfs') and not (a[0] == 'devtmpfs'):
+            a.remove(a[0])
+            alast = (len(a) - 1)
+            outtxt = ''
+            for i in a:
+                outtxt += '%s' % i
+                if i == a[alast]:
+                    outtxt += '\n'
+                else:
+                    outtxt += '\t'
+            tmp = a[alast]
+            outdict[tmp] = outtxt
 
 outtxt = ''
 # put 'Mounted on' line at top
@@ -32,7 +33,7 @@ except Exception as e:
     pass
 
 # attempt to delete stupid values
-deleteme = [ 'shit', '/dev/shm' ]
+deleteme = [ 'shit' ]
 for i in deleteme:
     try:
         del outdict[i]
