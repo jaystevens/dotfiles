@@ -261,6 +261,7 @@ else
 fi
 alias fn='find . -name'
 alias hi='history | tail -20'
+alias df='df -Ph'
 alias rsyncmti='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
 alias wizmnt='sshfs -o Cipher="arcfour" root@wizardofthenet.com:/home/ghosttoast/www/www/'
 alias lfmnt='sshfs -o Cipher="arcfour" jay.stevens@landfill.mti.ad:/data/landfill/'
