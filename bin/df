@@ -2,7 +2,7 @@
 
 import subprocess
 
-dfcmd = subprocess.Popen('df -Ph', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+dfcmd = subprocess.Popen('/bin/df -Ph', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 intxt = dfcmd.communicate()[0]
 intxt = intxt.split('\n')
 outtxt = ''
