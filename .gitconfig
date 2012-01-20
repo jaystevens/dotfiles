@@ -3,6 +3,8 @@
     email = jay@wizardofthenet.com
 
 [alias]
+    pull        = pull --ff-only --progress
+    push        = push --progress
     ll          = log --pretty=oneline --abbrev-commit --max-count=15
     fp          = format-patch --stdout
     ci          = commit
