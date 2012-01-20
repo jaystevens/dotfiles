@@ -1,86 +1,84 @@
 [user]
-	name = Jay Stevens
-	email = jay@wizardofthenet.com
+    name = Jay Stevens
+    email = jay@wizardofthenet.com
 
 [alias]
-	browse       = !hub browse
-	w            = !hub browse
-	compare      = !hub compare
-	cb           = !git-cut-branch
-	sh           = !git-sh
-	grab         = !git-grab
-	thanks       = !git-thanks
-	track        = !git-track
-	ll           = log --pretty=oneline --abbrev-commit --max-count=15
-	wip          = !git add -u && git commit -m ...
-	wipc         = !date >> WIP && git add WIP && git commit -m ...
-	fp           = format-patch --stdout
-	ci           = commit
-	x            = checkout HEAD
-	bv           = !git branch --color -v | cut -c1-100
-	incoming     = !git-incoming
-	in           = !git-incoming
-	outgoing     = !git-outgoing
-	out          = !git-outgoing
-	s            = status -sb -uno --ignore-submodules=untracked
-	st           = status
-	sa           = status -sb --ignore-submodules=untracked
-
-	br			 = branch
-	co			 = checkout
-  unadd		 = reset HEAD
-  # show log
-  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-  # show a log without the formating, occasionaly handy for c&p
-	rawlog = log --format=\"format:commit %H%nAuthor:%an%n%n%B%n\"
-	# not useful itself, but handy to remember for use in scripts
-	thisbranch = rev-parse --abbrev-ref HEAD
-	# url of origin, about 99% of what I use git config --list for
-	cloneurl = config --get remote.origin.url
+    ll          = log --pretty=oneline --abbrev-commit --max-count=15
+    fp          = format-patch --stdout
+    ci          = commit
+    x           = checkout HEAD
+    bv          = !git branch --color -v | cut -c1-100
+    s           = status -sb -uno --ignore-submodules=untracked
+    st          = status
+    sa          = status -sb --ignore-submodules=untracked
+    br          = branch
+    co          = checkout
+    unstage     = reset HEAD
+    ad          = add
+    di          = diff
+    lo          = log --format=\"%h [%an] %ad | %s\" --date=short --max-count=15
+    pu          = push
+    up          = pull
+    # show log
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+    # show a log without the formating, occasionaly handy for c&p
+    rawlog = log --format=\"format:commit %H%nAuthor:%an%n%n%B%n\"
+    # not useful itself, but handy to remember for use in scripts
+    thisbranch = rev-parse --abbrev-ref HEAD
+    # url of origin, about 99% of what I use git config --list for
+    cloneurl = config --get remote.origin.url
 
 [core]
-	filemode = true
-	logallrefupdates = true
-	whitespace = space-before-tab, trailing-space
-	preloadindex = true
+    filemode = true
+    logallrefupdates = true
+    whitespace = space-before-tab, trailing-space
+    preloadindex = true
 
 [help]
-	browser = open
+    browser = open
 
 [branch]
-	autosetupmerge = true
+    autosetupmerge = true
 
 [diff]
-	renames = copies
-	mnemonicprefix = true
+    renames = copies
+    mnemonicprefix = true
 
 [push]
-	default = current
+    default = current
 
 [color]
-	ui = auto
+    ui = auto
 
 [color "diff"]
-	meta = blue bold
-	frag = magenta bold
-	old = red bold
-	new = green bold
+    meta = blue bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
 
 [color "branch"]
-	current = yellow reverse
-	local = yellow bold
-	remote = green bold
-	plain = red bold
+    current = yellow reverse
+    local = yellow bold
+    remote = green bold
+    plain = red bold
 
 [color "status"]
-	added = yellow
-	changed = green bold
-	untracked = blue bold
+    added = yellow
+    changed = green bold
+    untracked = blue bold
 
 [http]
-  sslVerify = no
+    sslVerify = no
+    postBuffer = 52428800
 
-[hub]
-	http-clone = true
+[pack]
+    packSizeLimit = 2g
 
-# vim: noexpandtab
+[difftool "beyondcomapre"]
+    path = /c/development/tools/beyondcompare/
+    cmd = /c/development/tools/beyondcompare/bcomp.exe \"$LOCAL\" \"$REMOTE\" -nobackups -title1=\"Old Version\" -title2=\"New Version\"
+    trustExitCode = false
+[mergetool "beyondcompare"]
+    path = /c/development/tools/beyondcompare/
+    cmd = /c/development/tools/beyondcompare/bcomp.exe \"$LOCAL\" \"$REMOTE\" \"$BASE\" \"$MERGED\" -nobackups -title1=\"Local Changes\" -title2=\"Remote Changes\" -title3=\"Committed\"
+    trustExitCode = false
