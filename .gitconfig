@@ -12,6 +12,7 @@
     st          = status
     sa          = status -sb --ignore-submodules=untracked
     br          = branch
+    bra         = branch -a
     co          = checkout
     unstage     = reset HEAD
     ad          = add
@@ -19,6 +20,9 @@
     lo          = log --format=\"%h [%an] %ad | %s\" --date=short --max-count=15
     pu          = push
     up          = pull
+    amend       = commit --amend
+    ammend      = amend
+    churners    = shortlog -sn --
     # show log
     hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
     # show a log without the formating, occasionaly handy for c&p
@@ -38,11 +42,17 @@
     browser = open
 
 [branch]
-    autosetupmerge = true
+    #autosetupmerge = true
+    # always setup 'git pull' to rebase instead of merge
+    autosetuprebase = always
 
 [diff]
     renames = copies
     mnemonicprefix = true
+
+[svn]
+    # push empty directory removals back to svn at directory deletes
+    rmdir = true
 
 [push]
     default = current
