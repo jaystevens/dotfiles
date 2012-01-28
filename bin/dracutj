@@ -1,11 +1,9 @@
 #!/bin/bash
 
 VER=$(uname -r)
-VER='3.1.9-1.fc16.x86_64'
+VER='3.2.2-1.fc16.x86_64'
 
 dracut -v -v -f \
---add-drivers qla2xxx \
---add-drivers ext4 \
 --strip \
 --lvmconf \
 --hostonly \
