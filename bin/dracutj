@@ -1,17 +1,25 @@
-#!/bin/bash
+#!/bin/env python
 
-VER=$(uname -r)
-VER='3.2.2-1.fc16.x86_64'
+import os
 
-dracut -v -v -f \
---add-drivers qla2xxx \
---add-drivers ext4 \
---strip \
---lvmconf \
---hostonly \
---fstab \
---xz \
---show-modules \
-/boot/initramfs-$VER.img \
-$VER
+bootlist = os.listdir('/boot')
 
+msg = 'dracut -v -v -f '
+
+if os.path.exists('/etc/fedora-release'):
+    msg += '--add-drivers qla2xxx '
+    msg += '--add-drivers ext4 '
+    msg += '--xz '
+
+msg += '--strip '
+msg += '--lvmconf '
+msg += '--hostonly '
+msg += '--fstab '
+
+for i in bootlist:
+    if (i.count('initramfs') > 0)  and (i.endswith('.img')):
+        i = i.replace('.img', '')
+        i = i.replace('initramfs-', '')
+        msg2 = msg
+        msg2 += '/boot/initramfs-%s.img %s' % (i, i)
+        os.system(msg2)
