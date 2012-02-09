@@ -256,10 +256,10 @@ fi
 # disk usage with human sizes and minimal depth
 if [ `uname -s` = "Darwin" ]; then
     alias du1='du -h -d 1'
-    alias du1s='date > du.txt; du -h -d 1 >> du.txt'
+    alias du1s='date > du.txt; du -h -d 1 >> du.txt; chmod a+rw du.txt'
 else
     alias du1='du -h --max-depth=1'
-    alias du1s='date > du.txt; du -h --max-depth=1 >> du.txt'
+    alias du1s='date > du.txt; du -h --max-depth=1 >> du.txt; chmod a+rw du.txt'
 fi
 alias fn='find . -name'
 alias hi='history | tail -20'
