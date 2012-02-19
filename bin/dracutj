@@ -10,11 +10,11 @@ if os.path.exists('/etc/fedora-release'):
     msg += '--add-drivers qla2xxx '
     msg += '--add-drivers ext4 '
     msg += '--xz '
+    msg += '--fstab '
 
 msg += '--strip '
 msg += '--lvmconf '
 msg += '--hostonly '
-msg += '--fstab '
 
 for i in bootlist:
     if (i.count('initramfs') > 0)  and (i.endswith('.img')):
