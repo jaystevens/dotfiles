@@ -83,6 +83,15 @@ fi
 test -d "/usr/local/gcc-4.6.2/lib64" &&
 LD_LIBRARY_PATH="/usr/local/gcc-4.6.2/lib64:$LD_LIBRARY_PATH"
 
+# on redhat some things compile into lib, some into lib64
+if [ -e "/etc/redhat-release" ]; then
+    : ${MACHINE=$(uname -m)}
+    if [ "$MACHINE" = x86_64 ]; then
+        test -d "/usr/local/lib64" &&
+            LD_LIBRARY_PATH="/usr/local/lib64:$LD_LIBRARY_PATH"
+    fi
+fi
+
 # intel compiler
 if [ -e "/opt/intel/bin/compilervars.sh" ]; then
     : ${MACHINE=$(uname -m)}
