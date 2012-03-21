@@ -431,8 +431,8 @@ ppush () { eval "${2:-PATH}='$(eval echo \$${2:-PATH})':$1"; }
 #   $ puniq /usr/bin:/usr/local/bin:/usr/bin
 #   /usr/bin:/usr/local/bin
 puniq () {
-    echo "$1" |tr : '\n' |nl |sort -u -k 2,2 |sort -n |
-    cut -f 2- |tr '\n' : |sed -e 's/:$//' -e 's/^://'
+    echo "$1" |sed -e 's/^://' |sed -e 's/:^//' |tr : '\n' |nl |sort -u -k 2,2 |sort -n |
+    cut -f 2- |tr '\n' : |sed -e 's/:$//' -e 's/^://' |sed -e 's/:^//'
 }
 
 # use gem-man(1) if available:
