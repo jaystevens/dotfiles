@@ -432,7 +432,7 @@ ppush () { eval "${2:-PATH}='$(eval echo \$${2:-PATH})':$1"; }
 #   /usr/bin:/usr/local/bin
 puniq () {
     echo "$1" |sed -e 's/^://' |sed -e 's/:^//' |tr : '\n' |nl |sort -u -k 2,2 |sort -n |
-    cut -f 2- |tr '\n' : |sed -e 's/:$//' -e 's/^://' |sed -e 's/:^//'
+    cut -f 2- |tr '\n' : |sed -e 's/:$//' -e 's/^://' |sed -e 's/:^//' |sed -e 's/^://'
 }
 
 # use gem-man(1) if available:
@@ -457,6 +457,7 @@ PATH=$(puniq $PATH)
 export PATH
 MANPATH=$(puniq $MANPATH)
 #export MANPATH
+LD_LIBRARY_PATH=$(puniq $LD_LIBRARY_PATH)
 LD_LIBRARY_PATH=$(puniq $LD_LIBRARY_PATH)
 export LD_LIBRARY_PATH
 
