@@ -297,6 +297,7 @@ if [ "$USER" = dataman ]; then
     alias chmod='sudo /bin/chmod'
     alias chgrp='sudo /bin/chgrp'
     alias chown='sudo /bin/chown'
+    alias ln='sudo /bin/ln'
 fi
 
 # ftp-srvr sudo alias
