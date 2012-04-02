@@ -80,8 +80,11 @@ if [ "$USER" = dataman ]; then
 fi
 
 # put gcc-4.6.3 in lib path if you have it
-test -d "/usr/local/gcc-4.6.3/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.6.3/lib64:$LD_LIBRARY_PATH"
+#test -d "/usr/local/gcc-4.6.3/lib64" &&
+#    LD_LIBRARY_PATH="/usr/local/gcc-4.6.3/lib64:$LD_LIBRARY_PATH"
+# put gcc-4.7.0 in lib path if you have it
+test -d "/usr/local/gcc-4.7.0/lib64" &&
+    LD_LIBRARY_PATH="/usr/local/gcc-4.7.0/lib64:$LD_LIBRARY_PATH"
 
 # on redhat some things compile into lib, some into lib64
 if [ -e "/etc/redhat-release" ]; then
