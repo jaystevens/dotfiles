@@ -79,9 +79,9 @@ if [ "$USER" = dataman ]; then
     source /usr/Atempo/tina/.tina.sh
 fi
 
-# put gcc-4.6.3 in lib path if you have it
-test -d "/usr/local/gcc-4.6.3/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.6.3/lib64:$LD_LIBRARY_PATH"
+# put gcc-4.7.0 in lib path if you have it
+test -d "/usr/local/gcc-4.7.0/lib64" &&
+    LD_LIBRARY_PATH="/usr/local/gcc-4.7.0/lib64:$LD_LIBRARY_PATH"
 
 # on redhat some things compile into lib, some into lib64
 if [ -e "/etc/redhat-release" ]; then
@@ -297,6 +297,7 @@ if [ "$USER" = dataman ]; then
     alias chmod='sudo /bin/chmod'
     alias chgrp='sudo /bin/chgrp'
     alias chown='sudo /bin/chown'
+    alias ln='sudo /bin/ln'
 fi
 
 # ftp-srvr sudo alias
