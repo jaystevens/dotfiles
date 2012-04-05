@@ -1,0 +1,6 @@
+#!/bin/env python
+
+import os, time
+while True:
+    os.system('ftpwho -v')
+    time.sleep(2)
