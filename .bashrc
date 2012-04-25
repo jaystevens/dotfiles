@@ -73,6 +73,10 @@ PATH="/usr/bsi/bin:$PATH"
 test -d "/usr/mti/bin" &&
 PATH="/usr/mti/bin:$PATH"
 
+# put anyconnect in path if you have it
+test -d "/opt/cisco/anyconnect/bin" &&
+PATH="/opt/cisco/anyconnect/bin:$PATH"
+
 if [ "$USER" = dataman ]; then
     # put Atempo in path if you have it
     test -e "/usr/Atempo/tina/.tina.sh" &&
