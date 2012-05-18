@@ -1,0 +1,26 @@
+export GCCVER="4.7.0"
+export QTVER="4.7.4"
+#export QTVER="4.8.0"
+export GMPVER="5.0.4"
+export MPFRVER="3.1.0"
+export MPCVER="0.9"
+
+export CC="/usr/local/gcc-${GCCVER}/bin/gcc"
+export CXX="/usr/local/gcc-${GCCVER}/bin/g++"
+export FC="/usr/local/gcc-${GCCVER}/bin/gfortran"
+
+export PATH="/usr/local/gcc-${GCCVER}/bin:$PATH"
+
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/gmp-${GMPVER}/lib"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/mpfr-${MPFRVER}/lib"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/mpc-${MPCVER}/lib"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/gcc-${GCCVER}/lib64"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/Trolltech/Qt-${QTVER}/lib"
+
+#export CFLAGS="-march=core2"
+#export CFLAGS="-march=corei7"
+#export CFLAGS="-march=native"
+#export CFLAGS="-march=native -O3"
+#export CFLAGS="-Wno-error -march=native"
+#export CXXFLAGS=${CFLAGS}
