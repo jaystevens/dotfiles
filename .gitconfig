@@ -1,6 +1,6 @@
 [user]
-    name = John Stevens
-    email = john.stevens@mtifilm.com
+    name = Jay Stevens
+    email = jay@wizardofthenet.com
 
 [alias]
     pull        = pull --ff-only --progress
