@@ -173,7 +173,8 @@ ACK_PAGER_COLOR="$PAGER"
 
 function load_out() {
 if [ `uname -s` = "Darwin" ]; then
-    echo -n "$(uptime | sed -e "s/.*load averages: \(.*\...\) \(.*\...\) \(.*\...\).*/\1/" -e "s/ //g")"
+    #echo -n "$(uptime | sed -e "s/.*load averages: \(.*\...\) \(.*\...\) \(.*\...\).*/\1/" -e "s/ //g")"
+    echo -n "-1"
 else
     echo -n "$(uptime | sed -e "s/.*load average: \(.*\...\), \(.*\...\), \(.*\...\).*/\1/" -e "s/ //g")"
 fi
