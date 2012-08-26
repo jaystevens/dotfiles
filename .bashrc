@@ -104,8 +104,12 @@ if [ -e "/opt/intel/bin/compilervars.sh" ]; then
     else
         source /opt/intel/bin/compilervars.sh ia32
     fi
-    alias unseticc="unset CC;unset CXX;unset F77;unset CFLAGS;unset CXXFLAGS;unset FFLAGS"
-    alias seticc='export CC="icc";export CXX="icpc";export F77="ifort";export CFLAGS="-xSSSE3_ATOM";export CXXFLAGS="-xSSSE3_ATOM";export FFLAGS="-xSSSE3_ATOM"'
+    alias unseticc='unset CC;unset CXX;unset F77;unset CFLAGS;unset CXXFLAGS;unset FFLAGS'
+    alias unsetcf='unset CFLAGS;unset CXXFLAGS;unset FFLAGS'
+    alias seticc='export CC="icc";export CXX="icpc";export F77="ifort"'
+    alias setatom='export CFLAGS="-xSSSE3_ATOM";export CXXFLAGS="-xSSSE3_ATOM";export FFLAGS="-xSSSE3_ATOM"'
+    alias setsse41='export CFLAGS="-xSSE4.1";export CXXFLAGS="-xSSE4.1";export FFLAGS="-xSSE4.1"'
+    alias setavx='export CFLAGS="-xAVX";export CXXFLAGS="-xAVX";export FFLAGS="-xAVX"'
 fi
 
 # ----------------------------------------------------------------------
