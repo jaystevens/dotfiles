@@ -73,6 +73,10 @@ PATH="/usr/bsi/bin:$PATH"
 test -d "/usr/mti/bin" &&
 PATH="/usr/mti/bin:$PATH"
 
+# put signiant dds in path if you have it
+test -d "/usr/signiant/dds/bin" &&
+PATH="/usr/signiant/dds/bin:$PATH"
+
 # put anyconnect in path if you have it
 test -d "/opt/cisco/anyconnect/bin" &&
 PATH="/opt/cisco/anyconnect/bin:$PATH"
