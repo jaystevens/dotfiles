@@ -1,4 +1,4 @@
-export GCCVER="4.7.0"
+export GCCVER="4.7.1"
 export QTVER="4.7.4"
 #export QTVER="4.8.0"
 export GMPVER="5.0.4"

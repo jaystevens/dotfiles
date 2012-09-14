@@ -73,6 +73,10 @@ PATH="/usr/bsi/bin:$PATH"
 test -d "/usr/mti/bin" &&
 PATH="/usr/mti/bin:$PATH"
 
+# put signiant dds in path if you have it
+test -d "/usr/signiant/dds/bin" &&
+PATH="/usr/signiant/dds/bin:$PATH"
+
 # put anyconnect in path if you have it
 test -d "/opt/cisco/anyconnect/bin" &&
 PATH="/opt/cisco/anyconnect/bin:$PATH"
@@ -83,9 +87,9 @@ if [ "$USER" = dataman ]; then
     source /usr/Atempo/tina/.tina.sh
 fi
 
-# put gcc-4.7.0 in lib path if you have it
-test -d "/usr/local/gcc-4.7.0/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.7.0/lib64:$LD_LIBRARY_PATH"
+# put gcc-4.7.1 in lib path if you have it
+test -d "/usr/local/gcc-4.7.1/lib64" &&
+    LD_LIBRARY_PATH="/usr/local/gcc-4.7.1/lib64:$LD_LIBRARY_PATH"
 
 # on redhat some things compile into lib, some into lib64
 if [ -e "/etc/redhat-release" ]; then
@@ -104,8 +108,12 @@ if [ -e "/opt/intel/bin/compilervars.sh" ]; then
     else
         source /opt/intel/bin/compilervars.sh ia32
     fi
-    alias unseticc="unset CC;unset CXX;unset F77;unset CFLAGS;unset CXXFLAGS;unset FFLAGS"
-    alias seticc='export CC="icc";export CXX="icpc";export F77="ifort";export CFLAGS="-xSSSE3_ATOM";export CXXFLAGS="-xSSSE3_ATOM";export FFLAGS="-xSSSE3_ATOM"'
+    alias unseticc='unset CC;unset CXX;unset F77;unset CFLAGS;unset CXXFLAGS;unset FFLAGS'
+    alias unsetcf='unset CFLAGS;unset CXXFLAGS;unset FFLAGS'
+    alias seticc='export CC="icc";export CXX="icpc";export F77="ifort"'
+    alias setatom='export CFLAGS="-xSSSE3_ATOM";export CXXFLAGS="-xSSSE3_ATOM";export FFLAGS="-xSSSE3_ATOM"'
+    alias setsse41='export CFLAGS="-xSSE4.1";export CXXFLAGS="-xSSE4.1";export FFLAGS="-xSSE4.1"'
+    alias setavx='export CFLAGS="-xAVX";export CXXFLAGS="-xAVX";export FFLAGS="-xAVX"'
 fi
 
 # ----------------------------------------------------------------------
