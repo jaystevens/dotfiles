@@ -305,6 +305,9 @@ fi
 test -e "/etc/fedora-release" &&
     alias rpmbuildjay="rpmbuild -bb --with baseonly --with firmware --without degubinfo --target=`uname -m` ~/rpmbuild/SPECS/kernel.spec"
 
+test -e "/usr/local/WowzaMediaServer" &&
+    alias wms="service WowzaMediaServer"
+
 # dataman user alias
 if [ "$USER" = dataman ]; then
     alias chmod='sudo /bin/chmod'
