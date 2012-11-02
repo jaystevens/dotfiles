@@ -318,6 +318,9 @@ if [ `uname -n` = "ftp-srvr.mti.ad" ]; then
     alias pure-ftpwho='sudo /usr/local/sbin/pure-ftpwho'
 fi
 
+# iptables alias
+alias iptables-list='iptables -L -nxv --line-numbers -t raw && iptables -L -nxv --line-numbers -t mangle && iptables -L -nxv --line-numbers -t nat && iptables -L -nxv --line-numbers -t filter'
+
 # ----------------------------------------------------------------------
 # BASH COMPLETION
 # ----------------------------------------------------------------------
