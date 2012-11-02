@@ -73,6 +73,10 @@ PATH="/usr/bsi/bin:$PATH"
 test -d "/usr/mti/bin" &&
 PATH="/usr/mti/bin:$PATH"
 
+# put signiant dds in path if you have it
+test -d "/usr/signiant/dds/bin" &&
+PATH="/usr/signiant/dds/bin:$PATH"
+
 # put anyconnect in path if you have it
 test -d "/opt/cisco/anyconnect/bin" &&
 PATH="/opt/cisco/anyconnect/bin:$PATH"
@@ -181,7 +185,8 @@ ACK_PAGER_COLOR="$PAGER"
 
 function load_out() {
 if [ `uname -s` = "Darwin" ]; then
-    echo -n "$(uptime | sed -e "s/.*load averages: \(.*\...\) \(.*\...\) \(.*\...\).*/\1/" -e "s/ //g")"
+    #echo -n "$(uptime | sed -e "s/.*load averages: \(.*\...\) \(.*\...\) \(.*\...\).*/\1/" -e "s/ //g")"
+    echo -n "-1"
 else
     echo -n "$(uptime | sed -e "s/.*load average: \(.*\...\), \(.*\...\), \(.*\...\).*/\1/" -e "s/ //g")"
 fi
@@ -299,6 +304,9 @@ fi
 # if on fedora alias my rpmbuild cmd
 test -e "/etc/fedora-release" &&
     alias rpmbuildjay="rpmbuild -bb --with baseonly --with firmware --without degubinfo --target=`uname -m` ~/rpmbuild/SPECS/kernel.spec"
+
+test -e "/usr/local/WowzaMediaServer" &&
+    alias wms="service WowzaMediaServer"
 
 # dataman user alias
 if [ "$USER" = dataman ]; then

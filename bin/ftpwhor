@@ -2,5 +2,7 @@
 
 import os, time
 while True:
+    os.system('clear')
+    os.system('date')
     os.system('ftpwho -v')
     time.sleep(2)

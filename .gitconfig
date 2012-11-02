@@ -1,11 +1,12 @@
 [user]
-    name = Jay Stevens
-    email = jay@wizardofthenet.com
+    name = Jason Stevens
+    email = jason.stevens@mtifilm.com
 
 [alias]
     pull        = pull --ff-only --progress
     push        = push --progress
     ll          = log --pretty=oneline --abbrev-commit --max-count=15
+    changelog   = log --no-merges --date=short --since=\"2 weeks ago\" --pretty=format:\"%ad %an %ae %n%B\"
     fp          = format-patch --stdout
     ci          = commit
     x           = checkout HEAD
