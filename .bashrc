@@ -320,8 +320,11 @@ fi
 
 # ftp-srvr sudo alias
 if [ `uname -n` = "ftp-srvr.mti.ad" ]; then
-    alias rmftp-pdb='sudo /usr/local/sbin/rmftp-pdb'
-    alias lsftp-pdb='sudo /usr/local/sbin/lsftp-pdb'
+    alias addftp='sudo /usr/local/sbin/addftp'
+    alias modftp='sudo /usr/local/sbin/modftp'
+    alias rmftp='sudo /usr/local/sbin/rmftp'
+    alias lsftp='sudo /usr/local/sbin/lsftp'
+    alias modsupport='sudo /usr/local/sbin/modsupport'
     alias ftpwho='sudo /usr/local/sbin/ftpwho'
     alias pure-ftpwho='sudo /usr/local/sbin/pure-ftpwho'
 fi
