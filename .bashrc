@@ -328,6 +328,7 @@ if [ `uname -n` = "ftp-srvr.mti.ad" ]; then
     alias modftp='sudo /usr/local/sbin/modftp'
     alias rmftp='sudo /usr/local/sbin/rmftp'
     alias lsftp='sudo /usr/local/sbin/lsftp'
+    alias modsupport='sudo /usr/local/sbin/modsupport'
     alias ftpwho='sudo /usr/local/sbin/ftpwho'
     alias pure-ftpwho='sudo /usr/local/sbin/pure-ftpwho'
 fi
