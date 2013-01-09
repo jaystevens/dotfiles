@@ -59,37 +59,40 @@ PATH="/usr/local/bin:$PATH"
 
 # put ~/bin on PATH if you have it
 test -d "$HOME/bin" &&
-PATH="$HOME/bin:$PATH"
+    PATH="$HOME/bin:$PATH"
 
 # put StorNext in path if you have it
 test -d "/usr/cvfs/bin" &&
-PATH="/usr/cvfs/bin:$PATH"
+    PATH="/usr/cvfs/bin:$PATH"
 
 # put Bright Systems in path if you have it
 test -d "/usr/bsi/bin" &&
-PATH="/usr/bsi/bin:$PATH"
+    PATH="/usr/bsi/bin:$PATH"
 
 # put mti tools in path if you have it
 test -d "/usr/mti/bin" &&
-PATH="/usr/mti/bin:$PATH"
+    PATH="/usr/mti/bin:$PATH"
 
 # put signiant dds in path if you have it
 test -d "/usr/signiant/dds/bin" &&
-PATH="/usr/signiant/dds/bin:$PATH"
+    PATH="/usr/signiant/dds/bin:$PATH"
 
 # put anyconnect in path if you have it
 test -d "/opt/cisco/anyconnect/bin" &&
-PATH="/opt/cisco/anyconnect/bin:$PATH"
+    PATH="/opt/cisco/anyconnect/bin:$PATH"
 
 if [ "$USER" = dataman ]; then
     # put Atempo in path if you have it
     test -e "/usr/Atempo/tina/.tina.sh" &&
-    source /usr/Atempo/tina/.tina.sh
+        source /usr/Atempo/tina/.tina.sh
 fi
 
 # put gcc-4.7.1 in lib path if you have it
 test -d "/usr/local/gcc-4.7.1/lib64" &&
     LD_LIBRARY_PATH="/usr/local/gcc-4.7.1/lib64:$LD_LIBRARY_PATH"
+# put gcc-4.7.2 in lib path if you have it
+test -d "/usr/local/gcc-4.7.2/lib64" &&
+    LD_LIBRARY_PATH="/usr/local/gcc-4.7.2/lib64:$LD_LIBRARY_PATH"
 
 # on redhat some things compile into lib, some into lib64
 if [ -e "/etc/redhat-release" ]; then
@@ -307,6 +310,7 @@ fi
 test -e "/etc/fedora-release" &&
     alias rpmbuildjay="rpmbuild -bb --with baseonly --with firmware --without degubinfo --target=`uname -m` ~/rpmbuild/SPECS/kernel.spec"
 
+# if Wowza install alias Wowza service control to 'wms'
 test -e "/usr/local/WowzaMediaServer" &&
     alias wms="service WowzaMediaServer"
 
