@@ -293,6 +293,7 @@ alias rsyncmti='rsync -avrh --progress --stats --inplace --whole-file --compress
 alias rsyncmtipre='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0 --preallocate'
 alias udrmti='udr -c /usr/local/bin/udr rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
 alias wizmnt='sshfs -o Cipher="arcfour" root@wizardofthenet.com:/home/ghosttoast/www/www/'
+alias uwizmnt='fusermount -u'
 alias lfmnt='sshfs -o Cipher="arcfour" jay.stevens@landfill.mti.ad:/data/landfill/'
 alias bashver='echo $BASH_VERSION'
 
