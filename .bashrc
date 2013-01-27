@@ -299,7 +299,7 @@ alias bashver='echo $BASH_VERSION'
 
 # make cvcp work more like cp -rvp, increase buffer
 test -e "/usr/cvfs/bin/cvcp" && 
-    alias cvcp='/usr/cvfs/bin/cvcp -k 16777216 -xyz'
+    alias cvcp='/usr/cvfs/bin/cvcp -k 16777216 -xyzd'
 
 # sudo cvadmin if not root
 if [ "$USER" != root ]; then
