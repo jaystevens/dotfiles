@@ -295,6 +295,7 @@ alias udrmti='udr -c /usr/local/bin/udr rsync -avrh --progress --stats --inplace
 alias wizmnt='sshfs -o Cipher="arcfour" root@wizardofthenet.com:/home/ghosttoast/www/www/'
 alias lfmnt='sshfs -o Cipher="arcfour" jay.stevens@landfill.mti.ad:/data/landfill/'
 alias bashver='echo $BASH_VERSION'
+alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.mti.ad"
 
 # make cvcp work more like cp -rvp, increase buffer
 test -e "/usr/cvfs/bin/cvcp" && 
