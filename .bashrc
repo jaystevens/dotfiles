@@ -293,13 +293,14 @@ alias rsyncmti='rsync -avrh --progress --stats --inplace --whole-file --compress
 alias rsyncmtipre='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0 --preallocate'
 alias udrmti='udr -c /usr/local/bin/udr rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
 alias wizmnt='sshfs -o Cipher="arcfour" root@wizardofthenet.com:/home/ghosttoast/www/www/'
+alias uwizmnt='fusermount -u'
 alias lfmnt='sshfs -o Cipher="arcfour" jay.stevens@landfill.mti.ad:/data/landfill/'
 alias bashver='echo $BASH_VERSION'
 alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.mti.ad"
 
 # make cvcp work more like cp -rvp, increase buffer
 test -e "/usr/cvfs/bin/cvcp" && 
-    alias cvcp='/usr/cvfs/bin/cvcp -k 16777216 -xyz'
+    alias cvcp='/usr/cvfs/bin/cvcp -k 16777216 -xyzd'
 
 # sudo cvadmin if not root
 if [ "$USER" != root ]; then
