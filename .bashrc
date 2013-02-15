@@ -113,10 +113,12 @@ if [ -e "/opt/intel/bin/compilervars.sh" ]; then
     fi
     alias unseticc='unset CC;unset CXX;unset F77;unset CFLAGS;unset CXXFLAGS;unset FFLAGS'
     alias unsetcf='unset CFLAGS;unset CXXFLAGS;unset FFLAGS'
-    alias seticc='export CC="icc";export CXX="icpc";export F77="ifort"'
-    alias setatom='export CFLAGS="-xSSSE3_ATOM";export CXXFLAGS="-xSSSE3_ATOM";export FFLAGS="-xSSSE3_ATOM"'
-    alias setsse41='export CFLAGS="-xSSE4.1";export CXXFLAGS="-xSSE4.1";export FFLAGS="-xSSE4.1"'
-    alias setavx='export CFLAGS="-xAVX";export CXXFLAGS="-xAVX";export FFLAGS="-xAVX"'
+    alias seticc='export CC="icc";export CXX="icpc";export F77="ifort";export AR="xiar";export LD="xild"'
+    alias setauto='export CFLAGS="-axSSSE3,SSE4.1,SSE4.2,AVX,CORE-AVX2,CORE-AVX-I";export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
+    alias setatom='export CFLAGS="-xSSSE3_ATOM";export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
+    alias setsse41='export CFLAGS="-xSSE4.1";export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
+    alias setavx='export CFLAGS="-xAVX";export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
+    alias setflags='export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
 fi
 
 # ----------------------------------------------------------------------
