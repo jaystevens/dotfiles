@@ -300,6 +300,11 @@ alias lfmnt='sshfs -o Cipher="arcfour" jay.stevens@landfill.mti.ad:/data/landfil
 alias bashver='echo $BASH_VERSION'
 alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.mti.ad"
 
+# alias titan on
+if [ `uname -n` = "ares.lan" ] then;
+    alias titanon='ipmipower -h 192.168.1.4 -u ADMIN -p ADMIN --on'
+fi
+
 # make cvcp work more like cp -rvp, increase buffer
 test -e "/usr/cvfs/bin/cvcp" && 
     alias cvcp='/usr/cvfs/bin/cvcp -k 16777216 -xyzd'
@@ -314,7 +319,7 @@ fi
 test -e "/etc/fedora-release" &&
     alias rpmbuildjay="rpmbuild -bb --with baseonly --with firmware --without degubinfo --target=`uname -m` ~/rpmbuild/SPECS/kernel.spec"
 
-# if Wowza install alias Wowza service control to 'wms'
+# if Wowza is installed add an alias to control it's service
 test -e "/usr/local/WowzaMediaServer" &&
     alias wms="service WowzaMediaServer"
 
