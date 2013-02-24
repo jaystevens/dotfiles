@@ -301,7 +301,7 @@ alias bashver='echo $BASH_VERSION'
 alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.mti.ad"
 
 # alias titan on
-if [ `uname -n` = "ares.lan" ] then;
+if [ `uname -n` = "ares.lan" ]; then
     alias titanon='ipmipower -h 192.168.1.4 -u ADMIN -p ADMIN --on'
 fi
 
