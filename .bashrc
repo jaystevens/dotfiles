@@ -87,18 +87,23 @@ if [ "$USER" = dataman ]; then
         source /usr/Atempo/tina/.tina.sh
 fi
 
-# put gcc-4.7.1 in lib path if you have it
-test -d "/usr/local/gcc-4.7.1/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.7.1/lib64:$LD_LIBRARY_PATH"
-# put gcc-4.7.2 in lib path if you have it
-test -d "/usr/local/gcc-4.7.2/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.7.2/lib64:$LD_LIBRARY_PATH"
-# put gcc-4.7.3 in lib path if you have it
-test -d "/usr/local/gcc-4.7.3/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.7.3/lib64:$LD_LIBRARY_PATH"
+# linux gcc - add new to top
+# put gcc-4.8.1 in lib path if you have it
+test -d "/usr/local/gcc-4.8.1/lib64" &&
+    LD_LIBRARY_PATH="/usr/local/gcc-4.8.1/lib64:$LD_LIBRARY_PATH"
 # put gcc-4.8.0 in lib path if you have it
 test -d "/usr/local/gcc-4.8.0/lib64" &&
     LD_LIBRARY_PATH="/usr/local/gcc-4.8.0/lib64:$LD_LIBRARY_PATH"
+# put gcc-4.7.3 in lib path if you have it
+test -d "/usr/local/gcc-4.7.3/lib64" &&
+    LD_LIBRARY_PATH="/usr/local/gcc-4.7.3/lib64:$LD_LIBRARY_PATH"
+# put gcc-4.7.2 in lib path if you have it
+test -d "/usr/local/gcc-4.7.2/lib64" &&
+    LD_LIBRARY_PATH="/usr/local/gcc-4.7.2/lib64:$LD_LIBRARY_PATH"
+# put gcc-4.7.1 in lib path if you have it
+test -d "/usr/local/gcc-4.7.1/lib64" &&
+    LD_LIBRARY_PATH="/usr/local/gcc-4.7.1/lib64:$LD_LIBRARY_PATH"
+
 
 # on redhat some things compile into lib, some into lib64
 if [ -e "/etc/redhat-release" ]; then
