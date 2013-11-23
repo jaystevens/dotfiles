@@ -389,9 +389,9 @@ test -z "$BASH_COMPLETION" && {
 
 # we always pass these to ls(1)
 if [ `uname -s` = "Darwin" ]; then
-    LS_COMMON="-hBGl"
+    LS_COMMON="-hBsl"
 else
-    LS_COMMON="-hBGl --color=auto"
+    LS_COMMON="-hBsl --color=auto"
 fi
 
 # if the dircolors utility is available, set that up to
