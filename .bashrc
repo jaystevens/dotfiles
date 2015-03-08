@@ -65,10 +65,6 @@ test -d "$HOME/bin" &&
 test -d "/usr/cvfs/bin" &&
     PATH="/usr/cvfs/bin:$PATH"
 
-# put Bright Systems in path if you have it
-test -d "/usr/bsi/bin" &&
-    PATH="/usr/bsi/bin:$PATH"
-
 # put mti tools in path if you have it
 test -d "/usr/mti/bin" &&
     PATH="/usr/mti/bin:$PATH"
