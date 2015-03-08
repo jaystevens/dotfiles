@@ -306,7 +306,7 @@ alias sshmdc1="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking n
 alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc2.mti.ad"
 
 # alias titan on
-if [ `uname -n` = "ares.lan" ]; then
+if [ `hostname -d` = "wiz.lan" ]; then
     alias titanon='ipmipower -h 192.168.1.4 -u ADMIN -p ADMIN --on'
 fi
 
