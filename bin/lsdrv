@@ -1,0 +1,593 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+# kate: tab-width 4; indent-width 4; tab-indents on; dynamic-word-wrap off; indent-mode python; line-numbers on;
+#
+# lsdrv - Report on a system's disk interfaces and how they are used.
+# 
+# Copyright (C) 2011-2012 Philip J. Turmel <philip@turmel.org>
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, version 2.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+
+import os, re, signal, stat, sys
+from subprocess import Popen, PIPE
+
+#-------------------
+# Handy base for objects as "bags of properties"
+# inspired by Peter Norvig http://norvig.com/python-iaq.html
+# Unlike the original, this one supplies 'None' instead of an attribute
+# error when an explicitly named property has not yet been set.
+class Struct(object):
+	def __init__(self, **entries):
+		self.__dict__.update(entries)
+	def __repr__(self, recurse=[]):
+		if self in recurse:
+			return type(self)
+		args = []
+		for (k,v) in vars(self).items():
+			if isinstance(v, Struct):
+				args.append('%s=%s' % (k, v.__repr__(recurse+[self])))
+			else:
+				args.append('%s=%s' % (k, repr(v)))
+		return '%s(%s)' % (type(self), ', '.join(args))
+	def clone(self):
+		return type(self)(**self.__dict__)
+	def __getattr__(self, attr):
+		if 'attrpath' in self.__dict__:
+			fn = os.path.join(self.attrpath, attr)
+			try:
+				fh = open(fn, 'r')
+				v = fh.readline()
+				if v and v[-1]=="\n":
+					v = v[:-1]
+				try:
+					n = int(v)
+					if str(n) == v:
+						v = n
+				except:
+					pass
+			except:
+				v = None
+			self.__dict__[attr] = v
+			return v
+		return None
+
+#-------------------
+# Read one line from a file and return it (without trailing newline) and
+# all leading and trailing whitespace removed.
+# Return None if the file doesn't exist.
+def fileline1(filename):
+	try:
+		fh = open(filename, 'r')
+	except IOError:
+		return None
+	try:
+		s = fh.readline()
+		if s and s[-1]=="\n":
+			return s[:-1].strip()
+		return s.strip()
+	finally:
+		fh.close()
+	return ''
+
+#-------------------
+# Define a global signal handler.  It's primary job will be to kill off
+# unruly sub-processes.
+killpid=0
+def sighandler(signum, frame):
+	global killpid
+	if signum==signal.SIGALRM and killpid:
+		try:
+			os.kill(killpid, signal.SIGKILL)
+		except:
+			pass
+		killpid=0
+signal.signal(signal.SIGALRM, sighandler)
+
+#-------------------
+# Update the PATH for utility calls to include the location
+# of udev utilities.  Set a default path if none is present (!!)
+try:
+	ospath = os.environ['PATH']
+	os.environ['PATH'] = ospath+':/lib/udev:/usr/lib/udev'
+except KeyError:
+	os.environ['PATH'] = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/lib/udev:/usr/lib/udev'
+
+#-------------------
+# Spawn an executable and collect its output.  Equivalent to the
+# check_output convenience function of the subprocess module introduced
+# in python 2.7.
+# If runtime is limited to fifteen seconds.
+RunxFails = dict()
+def runx(*args, **kwargs):
+	global killpid
+	if 'timeout' in kwargs:
+		timeout=kwargs['timeout']
+		del kwargs['timeout']
+	else:
+		timeout=5
+	kwargs['stdout'] = PIPE
+	kwargs['stderr'] = PIPE
+	try:
+		sub = Popen(*args, **kwargs)
+	except OSError:
+		e = sys.exc_info()[1]
+		RunxFails[args[0][0]] = args[0][0]
+		return ''
+	signal.alarm(timeout)
+	killpid = sub.pid
+	out, err = sub.communicate()
+	killpid=0
+	return out
+
+#-------------------
+# Extract a matched expression from a string buffer
+# If a match is found, return the given replace expression.
+re1 = re.compile(r'([/:][a-zA-Z]*)0+([0-9])')
+re2 = re.compile(r'Serial.+\'(.+)\'')
+re3 = re.compile(r'Serial.+:(.+)')
+def extractre(regexp, buffer, retexp=r'\1'):
+	mo = re.search(regexp, buffer)
+	if mo:
+		return mo.expand(retexp)
+	return None
+
+#-------------------
+# By Seo Sanghyeon.  Some changes by Connelly Barnes and Phil Turmel.
+def try_int(s):
+	try: return int(s)
+	except: return s
+natsortre = re.compile(r'(\d+|\D+)')
+def natsort_key(s):
+	if isinstance(s, str):
+		return map(try_int, natsortre.findall(s))
+	else:
+		try:
+			return tuple([natsort_key(x) for x in s])
+		except TypeError:
+			return s
+def natcmp(a, b):
+	return cmp(natsort_key(a), natsort_key(b))
+
+#-------------------
+# Extract shell variable assignments from a multiline string buffer
+# This simple implementation returns everything after the equals sign
+# as the value, including any quotes.
+varsre = re.compile(r'^\s*([a-zA-Z][a-zA-Z0-9_]*)\s*=(.+)$', re.MULTILINE)
+def extractvars(buffer):
+	vars=dict()
+	for mo in varsre.finditer(buffer):
+		vars[mo.group(1)] = try_int(mo.group(2))
+	return vars
+
+#-------------------
+# Convert device sizes expressed in kibibytes into human-readable
+# sizes with a reasonable power-of-two suffix.
+def k2size(k, fmt="%4.2f"):
+	if k<1000:
+		return (fmt+"k") % k
+	m=k/1024.0
+	if m<1000:
+		return (fmt+"m") % m
+	g=m/1024.0
+	if g<1000:
+		return (fmt+"g") % g
+	t=g/1024.0
+	if t<1000:
+		return (fmt+"t") % t
+	p=t/1024.0
+	return (fmt+"p") % p
+
+#-------------------
+# Convert device sizes expressed as 512-byte sectors into human-readable
+# sizes with a reasonable power-of-two suffix.
+def sect2size(sectors, fmt="%4.2f"):
+	return k2size(int(sectors)/2.0, fmt)
+
+#-------------------
+# Convert sizes expressed as bytes into human-readable
+# sizes with a reasonable power-of-two suffix.
+def byte2size(bytes, fmt="%4.2f"):
+	b=int(bytes)
+	if b<10000:
+		return (fmt+"b") % b
+	return k2size(b/1024.0, fmt)
+
+#-------------------
+# Given a sysfs path to the parent of a physical block device, resolve the
+# controller path, look it up in the list of known controllers, and return
+# the corresponding struct object.  If it's not present in the list, create
+# the struct object w/ filled in details.
+controllers=dict()
+def probe_controller(cpathlink):
+	cpath = os.path.realpath(cpathlink)
+	if cpath in controllers:
+		return controllers[cpath]
+	while not os.path.exists(cpath+'/driver'):
+		cpathparent = cpath.rsplit('/',1)[0]
+		if os.path.exists(cpathparent+'/driver'):
+			cpath = cpathparent
+			if cpath in controllers:
+				return controllers[cpath]
+			break
+		if len(cpathparent)<=12:
+			break
+		cpath = cpathparent
+	cntrlr = Struct(cpath=cpath, attrpath=cpath, units=dict(),
+		abbrev=re1.sub(r'\1\2', cpath[12:]))
+	if os.path.exists(cpath+'/driver'):
+		cntrlr.driver = os.path.realpath(cpath+'/driver').rsplit('/',1)[-1]
+		try:
+			cntrlr.modpre = cntrlr.modalias.split(':',1)[0]
+		except:
+			pass
+	if cntrlr.modpre == 'pci':
+		cntrlr.description = runx(['lspci', '-s', cntrlr.abbrev.rsplit('/',1)[-1]]).split("\n",1)[0]
+		cntrlr.descriptors = ['PCI', '[%s]' % cntrlr.driver, cntrlr.description]
+	elif cntrlr.modpre == 'usb':
+		if os.path.exists(cpath+'/busnum'):
+			cntrlr.busnum = fileline1(cpath+'/busnum')
+			cntrlr.devnum = fileline1(cpath+'/devnum')
+			cntrlr.serial = fileline1(cpath+'/serial')
+		else:
+			parentpath = os.path.dirname(cpath)
+			cntrlr.busnum = fileline1(parentpath+'/busnum')
+			cntrlr.devnum = fileline1(parentpath+'/devnum')
+			cntrlr.serial = fileline1(parentpath+'/serial')
+		cntrlr.description = runx(['lsusb', '-s', cntrlr.busnum+':'+cntrlr.devnum]).split("\n",1)[0]
+		cntrlr.descriptors = ['USB', '[%s]' % cntrlr.driver, cntrlr.description, '{%s}' % cntrlr.serial]
+	else:
+		cntrlr.descriptors = ['Controller %s' % cntrlr.abbrev[1:], '[%s]' % cntrlr.driver]
+	controllers[cpath] = cntrlr
+	return cntrlr
+
+#-------------------
+# Given a link to a physical block device syspath, resolve the real device
+# path, look it up in the list of known physical devices, and return
+# the corresponding struct object.  If it's not present in the list,
+# create the struct object w/ filled in details, and probe its
+# controller.
+phydevs=dict()
+def probe_device(devpathlink, nodestr):
+	devpath = os.path.realpath(devpathlink)
+	if devpath in phydevs:
+		return phydevs[devpath]
+	phy = Struct(attrpath=devpath, dev=nodestr)
+	if phy.serial:
+		phy.serial = phy.serial.strip()
+	if not phy.serial and phy.unique_id:
+		phy.serial = phy.unique_id.strip()
+	if not phy.serial and phy.ieee1394_id:
+		phy.serial = phy.ieee1394_id.strip()
+	if not phy.serial:
+		phy.__dict__.update(extractvars(runx(['ata_id', '--export', '/dev/block/'+nodestr])))
+		if phy.ID_SERIAL_SHORT:
+			phy.serial = str(phy.ID_SERIAL_SHORT).strip()
+		elif phy.ID_SERIAL:
+			phy.serial = str(phy.ID_SERIAL).strip()
+	if not phy.serial:
+		phy.serial = extractre(re2, runx(['sginfo', '-s', '/dev/block/'+nodestr]))
+	if not phy.serial:
+		phy.serial = extractre(re3, runx(['smartctl', '-i', '/dev/block/'+nodestr]))
+	if not phy.serial:
+		phy.serial = extractre(re3, runx(['smartctl', '-d', 'ata', '-i', '/dev/block/'+nodestr]))
+	phy.name = "%s %s" % (os.path.realpath(devpath+'/subsystem').rsplit('/',1)[-1], devpath.rsplit('/',1)[-1])
+	phy.controller = probe_controller(os.path.dirname(devpath))
+	if phy.controller:
+		phy.controller.units[phy.name] = phy
+	phydevs[devpath] = phy
+	return phy
+
+#-------------------
+# Collect block device information and create dictionaries by kernel
+# name and by device major:minor.  Probe each block device and try to
+# describe the filesystem or other usage.
+blockbyname=dict()
+blockbynode=dict()
+algorithms = ('left-asym', 'right-asym', 'left-sym', 'right-sym',     # 0-3 convential raid5 & 6
+	'parity-first', 'parity-last', '?6', '?7',                        # 4-7 convential raid5 & 6
+	'ddf-zero-restart', 'ddf-Nth-restart', 'ddf-Nth-continue', '?11', # 8-10 Intel DDF
+	'?12', '?13', '?14', '?15',
+	'left-asym-6', 'right-asym-6', 'left-sym-6', 'right-sym-6',       # 16-19 Raid6 w/ Q last
+	'parity-first-6')                                                 # 20    Raid6 w/ Q last
+UseVolID = os.path.exists('/lib/udev/vol_id')
+def probe_block(blocklink):
+	name=blocklink.rsplit('/', 1)[-1]
+	if name in blockbyname:
+		return blockbyname[name]
+	blkpath = os.path.realpath(blocklink)
+	blk=Struct(name=name, attrpath=blkpath, shown=False)
+	blk.sizestr=sect2size(blk.size)
+	node = blk.dev.split(':',1)
+	blk.major, blk.minor = tuple(map(int, node))
+	blockbyname[name] = blk
+	blockbynode[blk.dev] = blk
+	if not os.path.exists('/dev/block/'+blk.dev):
+		if not os.path.exists('/dev/block'):
+			os.mkdir('/dev/block', 0755)
+		print "Creating device for node %s ..." % blk.dev
+		os.mknod('/dev/block/'+blk.dev, stat.S_IFBLK | 0660, os.makedev(blk.major, blk.minor))
+	if os.path.exists(blkpath+'/device'):
+		blk.phy = probe_device(blkpath+'/device', blk.dev)
+		if blk.phy:
+			blk.phy.block = blk
+	if os.path.exists(blkpath+'/holders'):
+		blk.holders = os.listdir(blkpath+'/holders')
+	else:
+		blk.holders = []
+	if os.path.exists(blkpath+'/slaves'):
+		blk.slaves = os.listdir(blkpath+'/slaves')
+	else:
+		blk.slaves = []
+	blk.partitions = [y for y in os.listdir(blkpath) if os.path.exists(blkpath+'/'+y+'/dev')]
+	if UseVolID:
+		blk.__dict__.update(extractvars(runx(['vol_id', '--export', '/dev/block/'+blk.dev])))
+	else:
+		blk.__dict__.update(extractvars(runx(['blkid', '-p', '-o', 'udev', '/dev/block/'+blk.dev])))
+	if os.path.exists(blkpath+'/md'):
+		blk.md = Struct(attrpath=blkpath+'/md')
+		blk.isMD = True
+		blk.md.LEVEL = blk.md.level
+		if blk.md.level=='raid10':
+			layout = int(blk.md.layout)
+			near = layout & 0xff
+			if near>1:
+				blk.md.LEVEL += ',near%d' % near
+			far = (layout & 0xff00) >> 8
+			if far>1:
+				if layout & 0x10000:
+					blk.md.LEVEL += ',offset%d' % far
+				else:
+					blk.md.LEVEL += ',far%d' % far
+		elif blk.md.LEVEL in ('raid5', 'raid6'):
+			try:
+				blk.md.LEVEL += ','+algorithms[int(blk.layout)]
+			except:
+				pass
+		blk.preFS = "MD v%s %s (%s) %s" % (blk.md.metadata_version, blk.md.LEVEL, blk.md.raid_disks, blk.md.array_state)
+		if blk.md.degraded:
+			blk.preFS += " DEGRADED"
+			if blk.md.degraded>1:
+				blk.preFS += "x%d" % blk.md.degraded
+		if blk.md.chunk_size:
+			blk.preFS += ", %s Chunk" % byte2size(blk.md.chunk_size, "%g")
+		if blk.md.mismatch_count:
+			blk.preFS += ", %d Mismatches" % blk.md.mismatch_count
+		if blk.md.sync_action != 'idle':
+			try:
+				sync_pos, sep, sync_end = blk.md.sync_completed.split(' ',2)
+				blk.md.SYNC = "%s/%s" % (k2size(int(sync_pos)), k2size(int(sync_end)))
+			except:
+				blk.md.SYNC = blk.md.sync_completed
+			blk.preFS += ", %s (%s)" % (blk.md.sync_action, blk.md.SYNC)
+			try:
+				blk.preFS += " %s/sec" % k2size(blk.md.sync_speed)
+			except:
+				blk.preFS += " %s" % blk.md.sync_speed
+		if blk.md.uuid:
+			blk.md.UUID = ':'.join([blk.md.uuid[0:8], blk.md.uuid[8:16], blk.md.uuid[16:24], blk.md.uuid[24:]])
+		else:
+			blk.md.__dict__.update(extractvars(runx(['mdadm', '--export', '--detail', '/dev/block/'+blk.dev])))
+			blk.md.UUID = blk.md.MD_UUID
+		blk.preFS += ' {%s}' % blk.md.UUID
+	if blk.ID_FS_TYPE == 'linux_raid_member':
+		blk.hasMD = True
+		if blk.holders:
+			blk.array = probe_block(blkpath+'/holders/'+blk.holders[0])
+			blk.slave = Struct(attrpath=blkpath+'/holders/'+blk.holders[0]+'/md/dev-'+name)
+			peers = [y for y in blk.array.slaves if y != blk.name]
+			if peers:
+				peers = " (w/ %s)" % ",".join(peers)
+			else:
+				peers = ""
+			blk.FS = "MD %s (%s/%s)%s %s" % (blk.array.md.LEVEL, blk.slave.slot, blk.array.md.raid_disks, peers, blk.slave.state)
+		else:
+			blk.__dict__.update(extractvars(runx(['mdadm', '--export', '--examine', '/dev/block/'+blk.dev])))
+			blk.FS = "MD %s (%s) inactive" % (blk.MD_LEVEL, blk.MD_DEVICES)
+	elif blk.ID_FS_TYPE and blk.ID_FS_TYPE[0:3] == 'LVM':
+		# Placeholder string for inactive physical volumes.  It'll be
+		# overwritten when active PVs are scanned.
+		blk.FS = "PV %s (inactive)" % blk.ID_FS_TYPE
+	elif blk.ID_PART_TABLE_TYPE:
+		# The partitioning report is missed if vol_id is used in place of blkid
+		blk.FS = "Partitioned (%s)" % blk.ID_PART_TABLE_TYPE
+	elif blk.ID_FS_TYPE:
+		blk.FS = "%s" % blk.ID_FS_TYPE
+	else:
+		blk.FS = "Empty/Unknown"
+	if blk.ID_FS_LABEL:
+		blk.FS += " '%s'" % blk.ID_FS_LABEL
+	if blk.ID_FS_UUID:
+		blk.FS += " {%s}" % blk.ID_FS_UUID
+	for part in blk.partitions:
+		probe_block(blkpath+'/'+part)
+	return blk
+
+for x in os.listdir('/sys/block/'):
+	probe_block('/sys/block/'+x)
+
+#-------------------
+# Collect information on mounted file systems and annotate the
+# corresponding block device.  Use the block device's major:minor node
+# numbers, as the mount list often shows symlinks.
+pmfh = open('/proc/mounts', 'r')
+for x in pmfh:
+	if x[0:5] == '/dev/':
+		mdev, mnt = tuple(x.split(' ', 2)[0:2])
+		devstat = os.stat(mdev)
+		nodestr="%d:%d" % (os.major(devstat.st_rdev), os.minor(devstat.st_rdev))
+		if nodestr in blockbynode:
+			try:
+				mntstat = os.statvfs(mnt)
+			except OSError:
+				mntstat = None
+			dev = blockbynode[nodestr]
+			if (not dev.mounts):
+				dev.mounts = []
+			dev.mounts.append([mdev, mnt])
+			dev.mountinfo = mntstat
+pmfh.close()
+
+#-------------------
+# Collect information on LVM volumes and groups and annotate the
+# corresponding block device.  Use the block device's major:minor node
+# numbers, as the mount list often shows symlinks.
+vgroups = dict()
+for x in runx(['pvs', '-o', 'pv_name,pv_free,pv_used,pv_uuid,vg_name,vg_size,vg_free,vg_uuid', '--noheadings', '--separator', ' ']).split("\n"):
+	if x:
+		x = x.strip().replace('  ', ' ')
+		try:
+			pv_name, pv_free, pv_used, pv_uuid, vg_name, vg_size, vg_free, vg_uuid = tuple(x.split(' ',7))
+			devstat = os.stat(pv_name)
+			nodestr="%d:%d" % (os.major(devstat.st_rdev), os.minor(devstat.st_rdev))
+		except:
+			nodestr=""
+		if nodestr in blockbynode:
+			dev = blockbynode[nodestr]
+			dev.vg_name = vg_name
+			if not dev.hasLVM:
+				dev.hasLVM = True
+				dev.pv_free = pv_free
+				dev.pv_used = pv_used
+				dev.pv_uuid = pv_uuid
+				dev.FS = "PV %s %s used, %s free {%s}" % (dev.ID_FS_TYPE, pv_used, pv_free, pv_uuid)
+			if vg_name in vgroups:
+				vgroups[vg_name].PVs += [dev]
+			else:
+				vgroups[vg_name] = Struct(name=vg_name, size=vg_size, free=vg_free, uuid=vg_uuid, LVs=[], PVs=[dev])
+
+for x in runx(['lvs', '-o', 'vg_name,lv_name', '--noheadings', '--separator', ' ']).split("\n"):
+	if x:
+		x = x.strip().replace('  ', ' ')
+		vg_name, lv_name = tuple(x.split(' ',2))
+		devstat = os.stat('/dev/'+vg_name+'/'+lv_name)
+		nodestr="%d:%d" % (os.major(devstat.st_rdev), os.minor(devstat.st_rdev))
+		if nodestr in blockbynode:
+			dev = blockbynode[nodestr]
+			dev.isLVM = True
+			dev.vg_name = vg_name
+			dev.lv_name = lv_name
+			dev.FS = "LV %s %s" % (dev.lv_name, dev.FS)
+		if vg_name in vgroups:
+			vgroups[vg_name].LVs += [dev]
+		else:
+			vgroups[vg_name] = Struct(name=vg_name, LVs=[dev], PVs=[])
+
+#-------------------
+# Report unavailable utilities
+if RunxFails:
+	sys.stderr.write("**Warning** The following utility(ies) failed to execute:\n"
+		"  %s\nSome information may be missing.\n\n" % "\n  ".join(RunxFails.values()))
+
+#-------------------
+# Given an indent level and a volume group object, recursively describe it.
+def show_vgroup(indent, vg, pv):
+	otherPVs = [dev.name for dev in vg.PVs if dev != pv]
+	if otherPVs:
+		oPVs = " (w/ %s)" % ",".join(otherPVs)
+	else:
+		oPVs = ""
+	print "%s └VG %s %s%s %s free {%s}" % (indent, vg.name, vg.size, oPVs, vg.free, vg.uuid)
+	if vg.shown:
+		return
+	show_blocks(indent+"  ", vg.LVs)
+	vg.shown = True
+
+#-------------------
+# Given an indent level and list of block device names, recursively describe
+# them.
+continuation = ('│', '├')
+corner = (' ', '└')
+def show_blocks(indent, blocks):
+	for blk in blocks:
+		if blk == blocks[-1]:
+			branch=corner
+		else:
+			branch=continuation
+		if blk.preFS:
+			if not blk.shown and (blk.mounts or blk.hasLVM or blk.partitions or blk.holders):
+				line2 = continuation[0]
+			else:
+				line2 = corner[0]
+			namesizenode = "%s %s [%s]" % (blk.name, blk.sizestr, blk.dev)
+			print "%s%s%s %s" % (indent, branch[1], namesizenode, blk.preFS)
+			line2spacer = line2+" "*max(0,len(namesizenode)-len(corner[0]))
+			print "%s%s%s %s" % (indent, branch[0], line2spacer, blk.FS)
+		else:
+			print "%s%s%s %s [%s] %s" % (indent, branch[1], blk.name, blk.sizestr, blk.dev, blk.FS)
+		if blk.shown:
+			return
+		if blk.mounts:
+			for mounts in blk.mounts:
+				if mounts == blk.mounts[-1]:
+					mbranch=corner
+				else:
+					mbranch=continuation
+				print "%s%s%sMounted as %s @ %s" % (indent, branch[0], mbranch[1], mounts[0], mounts[1])
+		elif blk.hasLVM:
+			show_vgroup(indent, vgroups[blk.vg_name], blk)
+		else:
+			subs = blk.partitions + blk.holders
+			subs.sort(natcmp)
+			if subs:
+				show_blocks("%s%s" % (indent, branch[0]), [blockbyname[x] for x in subs])
+		blk.shown = True
+
+#-------------------
+# Collect SCSI host / controller pairs from sysfs and create an ordered tree.  Skip
+# hosts that have targets, as they will already be in the list.  Add empty physical
+# device entries for hosts without targets.
+scsidir = "/sys/bus/scsi/devices/"
+scsilist = os.listdir(scsidir)
+hosts = dict([(int(x[4:]), Struct(n=int(x[4:]), cpath=os.path.dirname(os.path.realpath(scsidir+x)), hpath='/'+x)) for x in scsilist if x[0:4]=='host'])
+
+for n, host in hosts.items():
+	cntrlr = probe_controller(host.cpath)
+	if cntrlr :
+		targets = [x for x in os.listdir(host.cpath+host.hpath) if x[0:6]=='target']
+		if not targets:
+			phy = Struct(name='scsi %d:x:x:x [Empty]' % host.n)
+			cntrlr.units[phy.name] = phy
+
+for cntrlr in controllers.values():
+	cntrlr.unitlist = cntrlr.units.keys()
+	if cntrlr.unitlist:
+		cntrlr.unitlist.sort(natcmp)
+		cntrlr.first = cntrlr.unitlist[0]
+	else:
+		cntrlr.first = ''
+
+tree=[(cntrlr.first, cntrlr) for cntrlr in controllers.values()]
+tree.sort(natcmp)
+
+for f, cntrlr in tree:
+	print " ".join(cntrlr.descriptors)
+	if cntrlr.unitlist:
+		cntrlr.units[cntrlr.unitlist[-1]].last = True
+	branch = continuation
+	for key in cntrlr.unitlist:
+		phy = cntrlr.units[key]
+		if phy.last:
+			branch = corner
+		unitdetail = phy.name
+		if phy.vendor:
+			unitdetail += ' '+phy.vendor
+		if phy.model:
+			unitdetail += ' '+phy.model
+		if phy.serial:
+			unitdetail += " {%s}" % phy.serial.strip()
+		print '%s%s' % (branch[1], unitdetail)
+		if phy.block:
+			show_blocks("%s" % branch[0], [phy.block])
+
+unshown = [z.name for z in blockbynode.values() if z.size != '0.00k' and not z.shown]
+unshown.sort(natcmp)
+if unshown:
+	print "Other Block Devices"
+	show_blocks("", [blockbyname[x] for x in unshown])
