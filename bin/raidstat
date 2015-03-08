@@ -1,0 +1,8 @@
+#!/bin/env python
+
+import os, time
+while True:
+    os.system('clear')
+    os.system('date')
+    os.system('cat /proc/mdstat')
+    time.sleep(2)
