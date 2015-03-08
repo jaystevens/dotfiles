@@ -273,14 +273,11 @@ if [ `uname -s` = "Darwin" ]; then
     }
 
     # setup java environment. puke.
-    JAVA_HOME="/System/Library/Frameworks/JavaVM.framework/Home"
-    ANT_HOME="/Developer/Java/Ant"
-    export ANT_HOME JAVA_HOME
+    export JAVA_HOME="/System/Library/Frameworks/JavaVM.framework/Home"
 
     # hold jruby's hand
     test -d /opt/jruby &&
-    JRUBY_HOME="/opt/jruby"
-    export JRUBY_HOME
+        export JRUBY_HOME="/opt/jruby"
 fi
 
 # ----------------------------------------------------------------------
