@@ -65,6 +65,13 @@ test -d "$HOME/bin" &&
 test -d "/usr/cvfs/bin" &&
     PATH="/usr/cvfs/bin:$PATH"
 
+# load StorNext Environment if you have it
+if [ $UID -eq 0 ]; then
+    if [ -e /usr/adic/.profile ]; then
+        . /usr/adic/.profile
+    fi
+fi
+
 # put mti tools in path if you have it
 test -d "/usr/mti/bin" &&
     PATH="/usr/mti/bin:$PATH"
