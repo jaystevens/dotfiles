@@ -302,6 +302,8 @@ alias uwizmnt='fusermount -u'
 alias lfmnt='sshfs -o Cipher="arcfour" jay.stevens@landfill.mti.ad:/data/landfill/'
 alias bashver='echo $BASH_VERSION'
 alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.mti.ad"
+alias sshmdc1="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc1.mti.ad"
+alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc2.mti.ad"
 
 # alias titan on
 if [ `uname -n` = "ares.lan" ]; then
