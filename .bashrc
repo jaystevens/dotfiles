@@ -331,8 +331,14 @@ test -e "/etc/fedora-release" &&
     alias rpmbuildjay="rpmbuild -bb --with baseonly --with firmware --without degubinfo --target=`uname -m` ~/rpmbuild/SPECS/kernel.spec"
 
 # if Wowza is installed add an alias to control it's service
+# version 3
 test -e "/usr/local/WowzaMediaServer" &&
     alias wms="service WowzaMediaServer"
+# version 4
+test -e "/usr/local/WowzaStreamingEngine" &&
+    alias wse="service WowzaStreamingEngine"
+test -e "/usr/local/WowzaStreamingEngine" &&
+    alias wsem="service WowzaStreamingEngineManager"
 
 # dataman user alias
 if [ "$USER" = dataman ]; then
