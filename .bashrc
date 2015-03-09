@@ -314,7 +314,7 @@ alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking n
 
 # alias titan on
 if [ `hostname -d` = "wiz.lan" ]; then
-    alias titanon='ipmipower -h 192.168.1.4 -u ADMIN -p ADMIN --on'
+    alias titanon='ipmipower -h 192.168.1.11 -u ADMIN -p ADMIN --on'
 fi
 
 # make cvcp work more like cp -rvp, increase buffer
