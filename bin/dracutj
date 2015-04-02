@@ -1,25 +1,45 @@
 #!/bin/env python
 
 import os
+import sys
+
+do_host_only = False
+do_xz_compress = False
+do_lzma_compress = False
+for arg in sys.argv:
+    if arg.lower().count('host') > 0:
+        do_host_only = True
+        print('dracutj will use host only mode (--hostonly)\n')
+    if arg.lower().count('xz') > 0:
+        do_xz_compress = True
+        print('dracutj will use xz compression (--xz)\n')
+    if arg.lower().count('lzma') > 0:
+        do_lzma_compress = True
+        print('dracutj will use lzma compression (--lzma)\n')
+
+# check for stupid
+if (do_xz_compress is True) and (do_lzma_compress is True):
+    print('select only one type of compression\n')
+    sys.exit(0)
 
 bootlist = os.listdir('/boot')
 
-msg = 'dracut -v -v -f '
+cmdline = 'dracut -v -f '  # basic dracut command
+cmdline += '--strip '  # strip executables
 
-if os.path.exists('/etc/fedora-release'):
-    msg += '--add-drivers qla2xxx '
-    msg += '--add-drivers ext4 '
-    msg += '--xz '
-    msg += '--fstab '
+if do_host_only is True:
+    cmdline += '--hostonly '  # make initramfs that will only work on this hardware
+if do_xz_compress is True:
+    cmdline += '--xz '  # compress initramfs using xz
+if do_lzma_compress is True:
+    cmdline += '--lzma '  # compress initramfs using lzma
 
-msg += '--strip '
-msg += '--lvmconf '
-msg += '--hostonly '
+for fname in bootlist:
+    if (fname.count('initramfs') > 0) and (fname.endswith('.img')):
+        kernel = fname
+        kernel = kernel.replace('.img', '')
+        kernel = kernel.replace('initramfs-', '')
 
-for i in bootlist:
-    if (i.count('initramfs') > 0)  and (i.endswith('.img')):
-        i = i.replace('.img', '')
-        i = i.replace('initramfs-', '')
-        msg2 = msg
-        msg2 += '/boot/initramfs-%s.img %s' % (i, i)
-        os.system(msg2)
+        runcmd = cmdline
+        runcmd += '/boot/{0} {1}'.format(fname, kernel)
+        os.system(runcmd)
