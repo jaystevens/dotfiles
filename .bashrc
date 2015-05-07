@@ -107,9 +107,11 @@ test -d "/usr/local/gcc-4.7.2/lib64" &&
 test -d "/usr/local/gcc-4.7.1/lib64" &&
     LD_LIBRARY_PATH="/usr/local/gcc-4.7.1/lib64:$LD_LIBRARY_PATH"
 
-
 # on redhat some things compile into lib, some into lib64
 if [ -e "/etc/redhat-release" ]; then
+    # add "32bit" lib
+    test -d "/usr/local/lib" &&
+        LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
     : ${MACHINE=$(uname -m)}
     if [ "$MACHINE" = x86_64 ]; then
         test -d "/usr/local/lib64" &&
