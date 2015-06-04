@@ -535,8 +535,8 @@ elif [ -e "/etc/redhat-release" ]; then
 fi
 # print mac version
 if [ `uname -s` = "Darwin" ]; then
-    MACVER_PART1=sw_vers -productName
-    MACVER_PART2=sw_vers -productVersion
+    MACVER_PART1=$(sw_vers -productName)
+    MACVER_PART2=$(sw_vers -productVersion)
     echo $MACVER_PART1 $MACVER_PART2
 fi
 
