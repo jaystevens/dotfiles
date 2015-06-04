@@ -524,7 +524,24 @@ prompt_color
 # MOTD / FORTUNE
 # -------------------------------------------------------------------
 
+osversion () {
+# print linux os dist and version
+if [ -e "/usr/bin/lsb_release" ]; then
+    lsb_release -ds | sed -e 's/"//g'
+elif [ -e "/etc/redhat-release" ]; then
+    cat /etc/redhat-release
+fi
+# print mac version
+if [ `uname -s` = "Darwin" ]; then
+    MACVER_PART1=sw_vers -productName
+    MACVER_PART2=sw_vers -productVersion
+    echo $MACVER_PART1 $MACVER_PART2
+fi
+
+}
+
 test -n "$INTERACTIVE" -a -n "$LOGIN" && {
+    osversion
     uname -npsr
     uptime
 }
