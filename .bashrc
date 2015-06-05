@@ -406,6 +406,7 @@ test -z "$BASH_COMPLETION" && {
 
 # we always pass these to ls(1)
 if [ `uname -s` = "Darwin" ]; then
+    export CLICOLOR=YES
     LS_COMMON="-hBsl"
 else
     LS_COMMON="-hBsl --color=auto"
