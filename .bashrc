@@ -315,6 +315,13 @@ alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no
 alias sshmdc1="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc1.mti.ad"
 alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc2.mti.ad"
 
+# alis spotlight control
+if [ `uname -s` = "Darwin" ]; then
+    alias spotlight-off="sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
+    alias spotlight-on="sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
+    alias spotlight-stat="sudo launchctl list | grep mds"
+fi
+
 # alias titan on
 if [[ `uname -n` = *"wiz.lan"* ]]; then
     alias titanon='ipmipower -h 192.168.1.11 -u ADMIN -p ADMIN --on'
