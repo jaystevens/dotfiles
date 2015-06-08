@@ -322,6 +322,12 @@ if [ `uname -s` = "Darwin" ]; then
     alias spotlight-stat="sudo launchctl list | grep mds"
 fi
 
+# alias poweroff on mac
+if [ `uname -s` = "Darwin" ]; then
+    alias poweroff='shutdown -h now'
+    #alias reboot='shutdown -r now'
+fi
+
 # alias titan on
 if [[ `uname -n` = *"wiz.lan"* ]]; then
     alias titanon='ipmipower -h 192.168.1.11 -u ADMIN -p ADMIN --on'
