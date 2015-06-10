@@ -107,6 +107,10 @@ test -d "/usr/local/gcc-4.7.2/lib64" &&
 test -d "/usr/local/gcc-4.7.1/lib64" &&
     LD_LIBRARY_PATH="/usr/local/gcc-4.7.1/lib64:$LD_LIBRARY_PATH"
 
+# QT 4.8.6
+test -d "/usr/local/Trolltech/Qt-4.8.6/lib" &&
+    LD_LIBRARY_PATH="/usr/local/Trolltech/Qt-4.8.6/lib:$LD_LIBRARY_PATH"
+
 # on redhat some things compile into lib, some into lib64
 if [ -e "/etc/redhat-release" ]; then
     # add "32bit" lib
