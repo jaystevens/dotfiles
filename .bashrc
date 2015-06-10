@@ -210,8 +210,8 @@ ACK_PAGER_COLOR="$PAGER"
 
 function load_out() {
 if [ `uname -s` = "Darwin" ]; then
-    #echo -n "$(uptime | sed -e "s/.*load averages: \(.*\...\) \(.*\...\) \(.*\...\).*/\1/" -e "s/ //g")"
-    echo -n "-1"
+    echo -n "$(uptime | sed -e "s/.*load averages: \(.*\...\) \(.*\...\) \(.*\...\).*/\1/" -e "s/ //g")"
+    #echo -n ""
 else
     echo -n "$(uptime | sed -e "s/.*load average: \(.*\...\), \(.*\...\), \(.*\...\).*/\1/" -e "s/ //g")"
 fi
@@ -309,6 +309,7 @@ alias fn='find . -name'
 alias hi='history | tail -20'
 alias df='df -Ph'
 alias rsyncmti='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
+alias rsyncvm='rsync -avrh --progress --stats --whole-file --sparse'
 alias udrmti='udr -c /usr/local/bin/udr rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
 alias wizmnt='sshfs -o Cipher="aes128-ctr" root@wizardofthenet.com:/home/ghosttoast/www/www/'
 alias uwizmnt='fusermount -u'
@@ -317,6 +318,19 @@ alias bashver='echo $BASH_VERSION'
 alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.mti.ad"
 alias sshmdc1="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc1.mti.ad"
 alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc2.mti.ad"
+
+# alis spotlight control
+if [ `uname -s` = "Darwin" ]; then
+    alias spotlight-off="sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
+    alias spotlight-on="sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
+    alias spotlight-stat="sudo launchctl list | grep mds"
+fi
+
+# alias poweroff on mac
+if [ `uname -s` = "Darwin" ]; then
+    alias poweroff='shutdown -h now'
+    #alias reboot='shutdown -r now'
+fi
 
 # alias titan on
 if [[ `uname -n` = *"wiz.lan"* ]]; then
@@ -402,6 +416,7 @@ test -z "$BASH_COMPLETION" && {
 
 # we always pass these to ls(1)
 if [ `uname -s` = "Darwin" ]; then
+    export CLICOLOR=YES
     LS_COMMON="-hBsl"
 else
     LS_COMMON="-hBsl --color=auto"
@@ -529,7 +544,24 @@ prompt_color
 # MOTD / FORTUNE
 # -------------------------------------------------------------------
 
+osversion () {
+# print linux os dist and version
+if [ -e "/usr/bin/lsb_release" ]; then
+    lsb_release -ds | sed -e 's/"//g'
+elif [ -e "/etc/redhat-release" ]; then
+    cat /etc/redhat-release
+fi
+# print mac version
+if [ `uname -s` = "Darwin" ]; then
+    MACVER_PART1=$(sw_vers -productName)
+    MACVER_PART2=$(sw_vers -productVersion)
+    echo $MACVER_PART1 $MACVER_PART2
+fi
+
+}
+
 test -n "$INTERACTIVE" -a -n "$LOGIN" && {
+    osversion
     uname -npsr
     uptime
 }
