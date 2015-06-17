@@ -324,6 +324,7 @@ if [ '/etc/init.d/sernet-samba-smbd' ]; then
     alias sernet-stop="service sernet-samba-smbd stop;service sernet-samba-nmbd stop;service sernet-samba-winbindd stop"
     alias sernet-start="service sernet-samba-winbindd start;sleep 2;service sernet-samba-nmbd start;sleep 2;service sernet-samba-smbd start"
     alias sernet-restart="sernet-stop;sleep 2;sernet-start"
+    alias sernet-status="service sernet-samba-smbd status;service sernet-samba-nmbd status;service sernet-samba-winbindd status;smbstatus"
 fi
 
 # alis spotlight control
