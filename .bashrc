@@ -320,11 +320,15 @@ alias sshmdc1="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking n
 alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc2.mti.ad"
 
 # sernet samba
-if [ '/etc/init.d/sernet-samba-smbd' ]; then
+if [ -e '/etc/init.d/sernet-samba-smbd' ]; then
     alias sernet-stop="service sernet-samba-smbd stop;service sernet-samba-nmbd stop;service sernet-samba-winbindd stop"
     alias sernet-start="service sernet-samba-winbindd start;sleep 2;service sernet-samba-nmbd start;sleep 2;service sernet-samba-smbd start"
     alias sernet-restart="sernet-stop;sleep 2;sernet-start"
     alias sernet-status="service sernet-samba-smbd status;service sernet-samba-nmbd status;service sernet-samba-winbindd status;smbstatus"
+    alias sernet-reload="service sernet-samba-winbindd reload;service sernet-samba-nmbd reload;service sernet-samba-smbd reload"
+    alias sernet-wb-stop="service sernet-samba-winbindd stop"
+    alias sernet-wb-start="service sernet-samba-winbindd start"
+    alias sernet-wb-restart="sernet-wb-stop;sleep 2;sernet-wb-start"
 fi
 
 # alis spotlight control
