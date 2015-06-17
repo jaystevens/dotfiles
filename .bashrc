@@ -319,6 +319,13 @@ alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no
 alias sshmdc1="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc1.mti.ad"
 alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc2.mti.ad"
 
+# sernet samba
+if [ '/etc/init.d/sernet-samba-smbd' ]; then
+    alias sernet-stop="service sernet-samba-smbd stop;service sernet-samba-nmbd stop;service sernet-samba-winbindd stop"
+    alias sernet-start="service sernet-samba-winbindd start;sleep 2;service sernet-samba-nmbd start;sleep 2;service sernet-samba-smbd start"
+    alias sernet-restart="sernet-stop;sleep 2;sernet-start"
+fi
+
 # alis spotlight control
 if [ `uname -s` = "Darwin" ]; then
     alias spotlight-off="sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
