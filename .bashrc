@@ -72,9 +72,9 @@ if [ $UID -eq 0 ]; then
     fi
 fi
 
-# put mti tools in path if you have it
-test -d "/usr/mti/bin" &&
-    PATH="/usr/mti/bin:$PATH"
+# put Data Mover TOOLS (dmtools) tools in path if you have it
+test -d "/usr/dmtools/bin" &&
+    PATH="/usr/dmtools/bin:$PATH"
 
 # put signiant dds in path if you have it
 test -d "/usr/signiant/dds/bin" &&
