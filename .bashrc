@@ -274,16 +274,14 @@ fi
 alias fn='find . -name'
 alias hi='history | tail -20'
 alias df='df -Ph'
-alias rsyncmti='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
+alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
 alias rsyncvm='rsync -avrh --progress --stats --whole-file --sparse'
-alias udrmti='udr -c /usr/local/bin/udr rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
 alias wizmnt='sshfs -o Cipher="aes128-ctr" root@wizardofthenet.com:/home/ghosttoast/www/www/'
 alias uwizmnt='fusermount -u'
-alias lfmnt='sshfs -o Cipher="aes128-ctr" jay.stevens@landfill.mti.ad:/data/landfill/'
 alias bashver='echo $BASH_VERSION'
-alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.mti.ad"
-alias sshmdc1="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc1.mti.ad"
-alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc2.mti.ad"
+alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.fdn.ad"
+alias sshmdc1="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc1.fdn.ad"
+alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc2.fdn.ad"
 
 # sernet samba
 if [ -e '/etc/init.d/sernet-samba-smbd' ]; then
@@ -348,7 +346,7 @@ if [ "$USER" = dataman ]; then
 fi
 
 # ftp-srvr sudo alias
-if [ `uname -n` = "ftp-srvr.mti.ad" ]; then
+if [ `uname -n` = "ftp-srvr.fdn.ad" ]; then
     alias addftp='sudo /usr/local/sbin/addftp'
     alias modftp='sudo /usr/local/sbin/modftp'
     alias rmftp='sudo /usr/local/sbin/rmftp'
