@@ -90,23 +90,6 @@ if [ "$USER" = dataman ]; then
         source /usr/Atempo/tina/.tina.sh
 fi
 
-# linux gcc - add new to top
-# put gcc-4.8.1 in lib path if you have it
-test -d "/usr/local/gcc-4.8.1/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.8.1/lib64:$LD_LIBRARY_PATH"
-# put gcc-4.8.0 in lib path if you have it
-test -d "/usr/local/gcc-4.8.0/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.8.0/lib64:$LD_LIBRARY_PATH"
-# put gcc-4.7.3 in lib path if you have it
-test -d "/usr/local/gcc-4.7.3/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.7.3/lib64:$LD_LIBRARY_PATH"
-# put gcc-4.7.2 in lib path if you have it
-test -d "/usr/local/gcc-4.7.2/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.7.2/lib64:$LD_LIBRARY_PATH"
-# put gcc-4.7.1 in lib path if you have it
-test -d "/usr/local/gcc-4.7.1/lib64" &&
-    LD_LIBRARY_PATH="/usr/local/gcc-4.7.1/lib64:$LD_LIBRARY_PATH"
-
 # QT 4.8.6
 test -d "/usr/local/Trolltech/Qt-4.8.6/lib" &&
     LD_LIBRARY_PATH="/usr/local/Trolltech/Qt-4.8.6/lib:$LD_LIBRARY_PATH"
@@ -123,23 +106,6 @@ if [ -e "/etc/redhat-release" ]; then
     fi
 fi
 
-# intel compiler
-if [ -e "/opt/intel/bin/compilervars.sh" ]; then
-    : ${MACHINE=$(uname -m)}
-    if [ "$MACHINE" = x86_64 ]; then
-        source /opt/intel/bin/compilervars.sh intel64
-    else
-        source /opt/intel/bin/compilervars.sh ia32
-    fi
-    alias unseticc='unset CC;unset CXX;unset F77;unset CFLAGS;unset CXXFLAGS;unset FFLAGS'
-    alias unsetcf='unset CFLAGS;unset CXXFLAGS;unset FFLAGS'
-    alias seticc='export CC="icc";export CXX="icpc";export F77="ifort";export AR="xiar";export LD="xild"'
-    alias setauto='export CFLAGS="-axSSSE3,SSE4.1,SSE4.2,AVX,CORE-AVX2,CORE-AVX-I";export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
-    alias setatom='export CFLAGS="-xSSSE3_ATOM";export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
-    alias setsse41='export CFLAGS="-xSSE4.1";export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
-    alias setavx='export CFLAGS="-xAVX";export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
-    alias setflags='export CXXFLAGS="$CFLAGS";export FFLAGS="$CFLAGS"'
-fi
 
 # ----------------------------------------------------------------------
 # ENVIRONMENT CONFIGURATION
@@ -331,7 +297,7 @@ if [ -e '/etc/init.d/sernet-samba-smbd' ]; then
     alias sernet-wb-restart="sernet-wb-stop;sleep 2;sernet-wb-start"
 fi
 
-# alis spotlight control
+# alias spotlight control
 if [ `uname -s` = "Darwin" ]; then
     alias spotlight-off="sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
     alias spotlight-on="sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
