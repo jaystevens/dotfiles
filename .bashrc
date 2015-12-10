@@ -280,8 +280,8 @@ alias wizmnt='sshfs -o Cipher="aes128-ctr" root@wizardofthenet.com:/home/ghostto
 alias uwizmnt='fusermount -u'
 alias bashver='echo $BASH_VERSION'
 alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.fdn.ad"
-alias sshmdc1="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc1.fdn.ad"
-alias sshmdc2="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc2.fdn.ad"
+alias sshmdc01="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc01.fdn.ad"
+alias sshmdc02="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc02.fdn.ad"
 
 # sernet samba
 if [ -e '/etc/init.d/sernet-samba-smbd' ]; then
