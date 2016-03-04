@@ -1,8 +1,14 @@
 #!/bin/env python
 
-import os, time
+import sys
+import os
+import time
+
 while True:
-    os.system('clear')
-    os.system('date')
-    os.system('ftpwho -v')
-    time.sleep(2)
+    try:
+        os.system('clear')
+        os.system('date')
+        os.system('ftpwho -v')
+        time.sleep(2)
+    except KeyboardInterrupt:
+        sys.exit(0)
