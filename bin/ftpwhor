@@ -8,7 +8,7 @@ while True:
     try:
         os.system('clear')
         os.system('date')
-        os.system('ftpwho -v')
+        os.system('pure-ftpwho -v')
         time.sleep(2)
     except KeyboardInterrupt:
         sys.exit(0)
