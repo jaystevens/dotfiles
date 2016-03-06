@@ -16,7 +16,8 @@ for line in intxt:
                 and not (a[4] == 'cgroup') and not (a[4] == 'pstore') and not(a[4] == 'autofs') \
                 and not (a[4] == 'configfs') and not (a[4] == 'rpc_pipefs') and not (a[4] == 'mqueue') \
                 and not (a[4] == 'debugfs') and not (a[4] == 'hugetlbfs') and not (a[4] == 'nfsd') \
-                and not (a[4] == 'binfmt_misc') and not (a[4] == 'fuse.gvfsd-fuse'):
+                and not (a[4] == 'binfmt_misc') and not (a[4] == 'fuse.gvfsd-fuse') \
+                and not (a[4] == 'fusectl'):
             a.remove(a[1]) # 'on'
             a.remove(a[2]) # really split() item [3], but we shifted the array to the left removing [1], 'type'
             alast = (len(a) - 1)
