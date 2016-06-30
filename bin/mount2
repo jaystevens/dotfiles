@@ -1,8 +1,14 @@
 #!/usr/bin/env python
 
+import sys
 import subprocess
 
-mountcmd = subprocess.Popen('/bin/mount', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+if sys.platform.startswith('darwin'):
+    mount_cmd_path = '/sbin/mount'
+else:
+    mount_cmd_path = '/bin/mount'
+
+mountcmd = subprocess.Popen(mount_cmd_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 intxt = mountcmd.communicate()[0]
 intxt = intxt.split('\n')
 outtxt = ''
@@ -10,26 +16,47 @@ outdict = {}
 
 for line in intxt:
     a = line.split()
-    if len(a) > 4:
-        if not (a[4] == 'sysfs') and not (a[4] == 'proc') and not (a[4] == 'devtmpfs') \
-                and not (a[4] == 'securityfs') and not (a[4] == 'tmpfs') and not (a[4] == 'devpts') \
-                and not (a[4] == 'cgroup') and not (a[4] == 'pstore') and not(a[4] == 'autofs') \
-                and not (a[4] == 'configfs') and not (a[4] == 'rpc_pipefs') and not (a[4] == 'mqueue') \
-                and not (a[4] == 'debugfs') and not (a[4] == 'hugetlbfs') and not (a[4] == 'nfsd') \
-                and not (a[4] == 'binfmt_misc') and not (a[4] == 'fuse.gvfsd-fuse') \
-                and not (a[4] == 'fusectl'):
-            a.remove(a[1]) # 'on'
-            a.remove(a[2]) # really split() item [3], but we shifted the array to the left removing [1], 'type'
-            alast = (len(a) - 1)
-            outtxt = ''
-            for i in a:
-                outtxt += '%s' % i
-                if i == a[alast]:
-                    outtxt += '\n'
-                else:
-                    outtxt += '\t'
-            key_val = a[1]
-            outdict[key_val] = outtxt
+    if sys.platform.startswith('darwin'):
+        if len(a) > 1:
+            if (a[1] == 'on') and not (a[3].count('devfs')) and not (a[3].count('autofs')):
+                a.remove(a[1]) # 'on'
+                alast = (len(a) - 1)
+                outtxt = ''
+                for i in a:
+                    outtxt += '%s' % i
+                    if i == a[alast]:
+                        outtxt += '\n'
+                    else:
+                        # this fixes "mounted by admin"
+                        if outtxt.endswith('mounted') or outtxt.endswith('by'):
+                            outtxt += ' '
+                        # this condenses the mount opts to be like linux
+                        elif not outtxt.endswith(','):
+                            outtxt += '\t'
+                key_val = a[1]
+                outdict[key_val] = outtxt
+    else:
+        # linux mode
+        if len(a) > 4:
+            if not (a[4] == 'sysfs') and not (a[4] == 'proc') and not (a[4] == 'devtmpfs') \
+                    and not (a[4] == 'securityfs') and not (a[4] == 'tmpfs') and not (a[4] == 'devpts') \
+                    and not (a[4] == 'cgroup') and not (a[4] == 'pstore') and not(a[4] == 'autofs') \
+                    and not (a[4] == 'configfs') and not (a[4] == 'rpc_pipefs') and not (a[4] == 'mqueue') \
+                    and not (a[4] == 'debugfs') and not (a[4] == 'hugetlbfs') and not (a[4] == 'nfsd') \
+                    and not (a[4] == 'binfmt_misc') and not (a[4] == 'fuse.gvfsd-fuse') \
+                    and not (a[4] == 'fusectl'):
+                a.remove(a[1]) # 'on'
+                a.remove(a[2]) # really split() item [3], but we shifted the array to the left removing [1], 'type'
+                alast = (len(a) - 1)
+                outtxt = ''
+                for i in a:
+                    outtxt += '%s' % i
+                    if i == a[alast]:
+                        outtxt += '\n'
+                    else:
+                        outtxt += '\t'
+                key_val = a[1]
+                outdict[key_val] = outtxt
 
 outtxt = ''
 
@@ -38,4 +65,4 @@ for key in sorted(outdict.iterkeys()):
     outtxt += '%s' % outdict[key]
 outtxt = outtxt.rstrip('\n')
 print(outtxt)
-    
+
