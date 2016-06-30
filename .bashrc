@@ -13,27 +13,26 @@
 
 # readline config
 : ${INPUTRC=~/.inputrc}
-#complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh scp sftp
-#complete -W "$(echo `cat /etc/ssh/ssh_known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh scp sftp
 
 # ----------------------------------------------------------------------
 #  SHELL OPTIONS
 # ----------------------------------------------------------------------
 
 # bring in system bashrc
-test -r /etc/bashrc &&
-      . /etc/bashrc
+if [ -r /etc/bashrc ]; then
+    . /etc/bashrc
+fi
 
 # notify of bg job completion immediately
 set -o notify
 
 # shell opts. see bash(1) for details
-shopt -s cdspell >/dev/null 2>&1
-shopt -s extglob >/dev/null 2>&1
-shopt -s histappend >/dev/null 2>&1
-shopt -s hostcomplete >/dev/null 2>&1
-shopt -s interactive_comments >/dev/null 2>&1
-shopt -u mailwarn >/dev/null 2>&1
+shopt -s cdspell                 >/dev/null 2>&1
+shopt -s extglob                 >/dev/null 2>&1
+shopt -s histappend              >/dev/null 2>&1
+shopt -s hostcomplete            >/dev/null 2>&1
+shopt -s interactive_comments    >/dev/null 2>&1
+shopt -u mailwarn                >/dev/null 2>&1
 shopt -s no_empty_cmd_completion >/dev/null 2>&1
 
 # fuck that you have new mail shit
@@ -58,12 +57,14 @@ PATH="$PATH:/usr/local/sbin:/usr/sbin:/sbin"
 PATH="/usr/local/bin:$PATH"
 
 # put ~/bin on PATH if you have it
-test -d "$HOME/bin" &&
+if [ -d "$HOME/bin" ]; then
     PATH="$HOME/bin:$PATH"
+fi
 
 # put StorNext in path if you have it
-test -d "/usr/cvfs/bin" &&
+if [ -d "/usr/cvfs/bin" ]; then
     PATH="/usr/cvfs/bin:$PATH"
+fi
 
 # load StorNext Environment if you have it
 if [ $UID -eq 0 ]; then
@@ -73,36 +74,43 @@ if [ $UID -eq 0 ]; then
 fi
 
 # put TapeTools in path if you have it
-test -d "/usr/tapetools/bin" &&
+if [ -d "/usr/tapetools/bin" ]; then
     PATH="/usr/tapetools/bin:$PATH"
+fi
 
 # put signiant dds in path if you have it
-test -d "/usr/signiant/dds/bin" &&
+if [ -d "/usr/signiant/dds/bin" ]; then
     PATH="/usr/signiant/dds/bin:$PATH"
+fi
 
 # put anyconnect in path if you have it
-test -d "/opt/cisco/anyconnect/bin" &&
+if [ -d "/opt/cisco/anyconnect/bin" ]; then
     PATH="/opt/cisco/anyconnect/bin:$PATH"
+fi
 
 if [ "$USER" = dataman ]; then
     # put Atempo in path if you have it
-    test -e "/usr/Atempo/tina/.tina.sh" &&
+    if [ -e "/usr/Atempo/tina/.tina.sh" ]; then
         source /usr/Atempo/tina/.tina.sh
+    fi
 fi
 
 # QT 4.8.6
-test -d "/usr/local/Trolltech/Qt-4.8.6/lib" &&
+if [ -d "/usr/local/Trolltech/Qt-4.8.6/lib" ]; then
     LD_LIBRARY_PATH="/usr/local/Trolltech/Qt-4.8.6/lib:$LD_LIBRARY_PATH"
+fi
 
 # on redhat some things compile into lib, some into lib64
 if [ -e "/etc/redhat-release" ]; then
     # add "32bit" lib
-    test -d "/usr/local/lib" &&
+    if [ -d "/usr/local/lib" ]; then
         LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+    fi
     : ${MACHINE=$(uname -m)}
     if [ "$MACHINE" = x86_64 ]; then
-        test -d "/usr/local/lib64" &&
+        if [ -d "/usr/local/lib64" ]; then
             LD_LIBRARY_PATH="/usr/local/lib64:$LD_LIBRARY_PATH"
+        fi
     fi
 fi
 
@@ -139,8 +147,8 @@ FIGNORE="~:CVS:#:.pyc:.swp:.swa:apache-solr-*"
 
 # history stuff
 HISTCONTROL=ignoreboth
-HISTFILESIZE=10000
-HISTSIZE=10000
+HISTFILESIZE=100000
+HISTSIZE=100000
 
 # ----------------------------------------------------------------------
 # PAGER / EDITOR
@@ -151,13 +159,15 @@ HAVE_VIM=$(command -v vim)
 HAVE_GVIM=$(command -v gvim)
 
 # EDITOR
-test -n "$HAVE_VIM" &&
-EDITOR=vim ||
-EDITOR=vi
+if [ -n "$HAVE_VIM" ]; then
+    EDITOR=vim
+else
+    EDITOR=vi
+fi
 export EDITOR
 
 # PAGER
-if test -n "$(command -v less)" ; then
+if [ -n "$(command -v less)" ]; then
     PAGER="less -FirSwX"
     MANPAGER="less -FiRswX"
 else
@@ -166,7 +176,7 @@ else
 fi
 export PAGER MANPAGER
 
-# Ack
+# ACK
 ACK_PAGER="$PAGER"
 ACK_PAGER_COLOR="$PAGER"
 
@@ -175,9 +185,8 @@ ACK_PAGER_COLOR="$PAGER"
 # ----------------------------------------------------------------------
 
 function load_out() {
-if [ `uname -s` = "Darwin" ]; then
+if [ $UNAME = "Darwin" ]; then
     echo -n "$(uptime | sed -e "s/.*load averages: \(.*\...\) \(.*\...\) \(.*\...\).*/\1/" -e "s/ //g")"
-    #echo -n ""
 else
     echo -n "$(uptime | sed -e "s/.*load average: \(.*\...\), \(.*\...\), \(.*\...\).*/\1/" -e "s/ //g")"
 fi
@@ -194,8 +203,8 @@ if [ "$LOGNAME" = "root" ]; then
     COLOR1="${RED}"
     COLOR2="${BROWN}"
     P="#"
-elif hostname | grep -q 'github\.com'; then
-    GITHUB=yep
+elif hostname | grep -q '\.github\.'; then
+    GITHUB=true
     COLOR1="\[\e[0;94m\]"
     COLOR2="\[\e[0;92m\]"
     P="\$"
@@ -218,16 +227,19 @@ prompt_compact() {
 }
 
 prompt_color() {
-    #PS1="${GREY}[${COLOR1}\u${GREY}@${COLOR2}\h${GREY}:${COLOR1}\W${GREY}]${COLOR2}$P${PS_CLEAR} "
+    PS1="${GREY}[${COLOR1}\u${GREY}@${COLOR2}\h${GREY}:${COLOR1}\W${GREY}]${COLOR2}$P${PS_CLEAR} "
+}
+
+prompt_full() {
     PS1="${GREY}[\$(load_out)][\A][${COLOR1}\u${GREY}@${COLOR2}\h${GREY}:${COLOR1}\W${GREY}]${COLOR2}$P${PS_CLEAR} "
-    PS2="\[[33;1m\]continue \[[0m[1m\]> "
+    PS2="\[[33;1m\] \[[0m[1m\]> "
 }
 
 # ----------------------------------------------------------------------
 # MACOS X / DARWIN SPECIFIC
 # ----------------------------------------------------------------------
 
-if [ `uname -s` = "Darwin" ]; then
+if [ $UNAME = "Darwin" ]; then
     # put ports on the paths if /opt/local exists
     test -x /opt/local -a ! -L /opt/local && {
         PORTS=/opt/local
@@ -237,10 +249,12 @@ if [ `uname -s` = "Darwin" ]; then
         MANPATH="$PORTS/share/man:$MANPATH"
 
         # make sure /usr/local is infront of /opt/local
-        test -d "/usr/local/bin" &&
+        if [ -d "/usr/local/bin" ]; then
             PATH="/usr/local/bin:$PATH"
-        test -d "/usr/local/sbin" &&
+        fi
+        if [ -d "/usr/local/sbin" ]; then
             PATH="/usr/local/sbin:$PATH"
+        fi
 
         # nice little port alias
         alias port="sudo nice -n +18 $PORTS/bin/port"
@@ -253,10 +267,6 @@ if [ `uname -s` = "Darwin" ]; then
 
     # setup java environment. puke.
     export JAVA_HOME="/System/Library/Frameworks/JavaVM.framework/Home"
-
-    # hold jruby's hand
-    test -d /opt/jruby &&
-        export JRUBY_HOME="/opt/jruby"
 fi
 
 # ----------------------------------------------------------------------
@@ -264,7 +274,7 @@ fi
 # ----------------------------------------------------------------------
 
 # disk usage with human sizes and minimal depth
-if [ `uname -s` = "Darwin" ]; then
+if [ $UNAME = "Darwin" ]; then
     alias du1='du -h -d 1'
     alias du1s='date > du.txt; du -h -d 1 >> du.txt; chmod a+rw du.txt'
 else
@@ -296,46 +306,48 @@ if [ -e '/etc/init.d/sernet-samba-smbd' ]; then
 fi
 
 # alias spotlight control
-if [ `uname -s` = "Darwin" ]; then
+if [ $UNAME = "Darwin" ]; then
     alias spotlight-off="sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
     alias spotlight-on="sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
     alias spotlight-stat="sudo launchctl list | grep mds"
 fi
 
 # alias poweroff on mac
-if [ `uname -s` = "Darwin" ]; then
+if [ $UNAME = "Darwin" ]; then
     alias poweroff='shutdown -h now'
     #alias reboot='shutdown -r now'
 fi
 
 # alias titan on
-if [[ `uname -n` = *"wiz.lan"* ]]; then
-    alias titanon='ipmipower -h 192.168.1.11 -u ADMIN -p ADMIN --on'
-fi
+#if [[ `uname -n` = *"wiz.lan"* ]]; then
+#    alias titanon='ipmipower -h 192.168.1.11 -u ADMIN -p ADMIN --on'
+#fi
 
 # make cvcp work more like cp -rvp, increase buffer
-test -e "/usr/cvfs/bin/cvcp" && 
+if [ -e "/usr/cvfs/bin/cvcp" ]; then
     alias cvcp='/usr/cvfs/bin/cvcp -k 16777216 -xyzd'
+fi
 
 # sudo cvadmin if not root
 if [ "$USER" != root ]; then
-    test -e "/usr/cvfs/bin/cvadmin" &&
+    if [ -e "/usr/cvfs/bin/cvadmin" ]; then
         alias cvadmin='sudo /usr/cvfs/bin/cvadmin'
+    fi
 fi
 
 # if on fedora alias my rpmbuild cmd
-test -e "/etc/fedora-release" &&
+if [ -e "/etc/fedora-release" ]; then
     alias rpmbuildjay="rpmbuild -bb --with baseonly --with firmware --without degubinfo --target=`uname -m` ~/rpmbuild/SPECS/kernel.spec"
+fi
 
 # if Wowza is installed add an alias to control it's service
-# version 3
-test -e "/usr/local/WowzaMediaServer" &&
-    alias wms="service WowzaMediaServer"
 # version 4
-test -e "/usr/local/WowzaStreamingEngine" &&
+if [ -e "/usr/local/WowzaStreamingEngine" ]; then
     alias wse="service WowzaStreamingEngine"
-test -e "/usr/local/WowzaStreamingEngine" &&
+fi
+if [ -e "/usr/local/WowzaStreamingEngine" ]; then
     alias wsem="service WowzaStreamingEngineManager"
+fi
 
 # dataman user alias
 if [ "$USER" = dataman ]; then
@@ -363,23 +375,23 @@ alias iptables-list='iptables -L -nxv --line-numbers -t raw && iptables -L -nxv 
 # BASH COMPLETION
 # ----------------------------------------------------------------------
 
-test -z "$BASH_COMPLETION" && {
+if [ -z "$BASH_COMPLETION" ]; then
     bash=${BASH_VERSION%.*}; bmajor=${bash%.*}; bminor=${bash#*.}
-    test -n "$PS1" && test $bmajor -gt 1 && {
+    if [ -n "$PS1" -a "$bmajor" -gt 1 ]; then
         # search for a bash_completion file to source
         for f in /usr/local/etc/bash_completion \
                  /usr/pkg/etc/bash_completion \
                  /opt/local/etc/bash_completion \
                  /etc/bash_completion
         do
-            test -f $f && {
+            if [ -f $f ]; then
                 . $f
                 break
-            }
+            fi
         done
-    }
+    fi
     unset bash bmajor bminor
-}
+fi
 
 # override and disable tilde expansion
 #_expand() {
@@ -391,7 +403,7 @@ test -z "$BASH_COMPLETION" && {
 # ----------------------------------------------------------------------
 
 # we always pass these to ls(1)
-if [ `uname -s` = "Darwin" ]; then
+if [ $UNAME = "Darwin" ]; then
     export CLICOLOR=YES
     LS_COMMON="-hBsl"
 else
@@ -400,40 +412,23 @@ fi
 
 # if the dircolors utility is available, set that up to
 dircolors="$(type -P gdircolors dircolors | head -1)"
-test -n "$dircolors" && {
+if [ -n "$dircolors" ]; then
     COLORS=/etc/DIR_COLORS
     test -e "/etc/DIR_COLORS.$TERM"   && COLORS="/etc/DIR_COLORS.$TERM"
     test -e "$HOME/.dircolors"        && COLORS="$HOME/.dircolors"
     test ! -e "$COLORS"               && COLORS=
     eval `$dircolors --sh $COLORS`
-}
+fi
 unset dircolors
 
 # setup the main ls alias if we've established common args
-test -n "$LS_COMMON" &&
-alias ls="command ls $LS_COMMON"
+if [ -n "$LS_COMMON" ]; then
+    alias ls="command ls $LS_COMMON"
+fi
 
 # these use the ls aliases above
 alias ll="ls -l"
 alias l.="ls -d .*"
-
-# --------------------------------------------------------------------
-# MISC COMMANDS
-# --------------------------------------------------------------------
-
-# fix git ssh askpass on cmdline
-unset SSH_ASKPASS
-
-# push SSH public key to another box
-push_ssh_cert() {
-    local _host
-    test -f ~/.ssh/id_dsa.pub || ssh-keygen -t dsa
-    for _host in "$@";
-    do
-        echo $_host
-        ssh $_host 'cat >> ~/.ssh/authorized_keys' < ~/.ssh/id_dsa.pub
-    done
-}
 
 # --------------------------------------------------------------------
 # PATH MANIPULATION FUNCTIONS
@@ -486,22 +481,14 @@ puniq () {
     cut -f 2- |tr '\n' : |sed -e 's/:$//' -e 's/^://' |sed -e 's/:^//' |sed -e 's/^://'
 }
 
-# use gem-man(1) if available:
-man () {
-    gem man -s "$@" 2>/dev/null ||
-    command man "$@"
-}
-
 # -------------------------------------------------------------------
 # USER SHELL ENVIRONMENT
 # -------------------------------------------------------------------
 
-# bring in rbdev functions
-. rbdev 2>/dev/null || true
-
 # source ~/.shenv now if it exists
-test -r ~/.shenv &&
-. ~/.shenv
+if [ -r ~/.shenv ]; then
+    . ~/.shenv
+fi
 
 # condense PATH entries
 PATH=$(puniq $PATH)
@@ -513,8 +500,9 @@ LD_LIBRARY_PATH=$(puniq $LD_LIBRARY_PATH)
 export LD_LIBRARY_PATH
 
 # Use the color prompt by default when interactive
-test -n "$PS1" &&
-prompt_color
+if [ -n "$PS1" ]; then
+    prompt_full
+fi
 
 # -------------------------------------------------------------------
 # MOTD / FORTUNE
@@ -528,18 +516,20 @@ elif [ -e "/etc/redhat-release" ]; then
     cat /etc/redhat-release
 fi
 # print mac version
-if [ `uname -s` = "Darwin" ]; then
+if [ $UNAME = "Darwin" ]; then
     MACVER_PART1=$(sw_vers -productName)
     MACVER_PART2=$(sw_vers -productVersion)
     echo $MACVER_PART1 $MACVER_PART2
 fi
-
 }
 
-test -n "$INTERACTIVE" -a -n "$LOGIN" && {
+if [ -n "$INTERACTIVE" -a -n "$LOGIN" ]; then
     osversion
     uname -npsr
     uptime
-}
+fi
+
+# beep
+alias beep='tput bel'
 
 # vim: ts=4 sts=4 shiftwidth=4 expandtab
