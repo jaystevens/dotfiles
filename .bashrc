@@ -356,6 +356,7 @@ if [ "$USER" = dataman ]; then
     alias chown='sudo /bin/chown'
     alias ln='sudo /bin/ln'
     alias iotop='sudo /usr/sbin/iotop'
+    alias lsof='sudo /usr/sbin/lsof'
 fi
 
 # ftp-srvr sudo alias
