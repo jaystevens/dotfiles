@@ -32,21 +32,26 @@ class grub2select():
     menuData = {}
     grub2cfgData = StringIO.StringIO()
     grubEnvData = StringIO.StringIO()
-    grub2cfg = "/boot/grub2/grub.cfg"
+    grub2Path = "/boot/grub2/"
+    grub2cfgFile = "grub.cfg"
+    grub2cfgFileEFI = "grub2.cfg"
+    grub2cfg = os.path.join(grub2Path, grub2cfgFile)
+    grub2cfgEFI = os.path.join(grub2Path, grub2cfgFileEFI)
     grubDefault = str(None)
     grubDefaultMatch = None
-    
+
 
     def parseGrubCfg(self):
+        if os.path.exists(self.grub2cfgEFI):
+            self.grub2cfg = self.grub2cfgEFI
         """read in 'grub.cfg' and 'grub2-editenv list' and parse data"""
         if not os.path.exists(self.grub2cfg):
             print("unable to locate %s, is grub2 installed?" % self.grub2cfg)
             sys.exit(0)
 
-
         # load grub.cfg menu data
         self.grub2cfgData = StringIO.StringIO()
-        f = open("/boot/grub2/grub.cfg", "r")
+        f = open(self.grub2cfg, "r")
         self.grub2cfgData.write(f.read())
         f.close()
         del(f)
@@ -72,7 +77,7 @@ class grub2select():
                 menu["id"] = line.split("'")[3]
                 self.menuData[self.menuCount] = menu
                 self.menuCount +=1
-                
+
         # parse grubEnv for default
         self.grubDefault = str(None)
         self.grubDefaultMatch = None
@@ -119,14 +124,14 @@ class grub2select():
         print("valid selection!\n")
 
         os.system('grub2-set-default "{0}"'.format(self.menuData[selection]["id"]))
-        os.system('grub2-mkconfig -o /boot/grub2/grub.cfg')
+        os.system('grub2-mkconfig -o %s' % self.grub2cfg)
 
     def showGrubDefault(self):
         if self.grubDefaultMatch is not None:
             print("Current Default: {0}".format(self.menuData[self.grubDefaultMatch]["name"]))
         else:
             print("Current Default: UNKNOWN")
-    
+
     def main(self):
         self.parseGrubCfg()
         self.selectKernel()
