@@ -2,6 +2,7 @@
 
 import sys
 import subprocess
+import math
 
 if sys.platform.startswith('darwin'):
     mount_cmd_path = '/sbin/mount'
@@ -13,57 +14,124 @@ intxt = mountcmd.communicate()[0]
 intxt = intxt.split('\n')
 outtxt = ''
 outdict = {}
+ignore_fs = [
+        'sysfs',
+        'proc',
+        'devtmpfs',
+        'securityfs',
+        'tmpfs',
+        'devpts',
+        'cgroup',
+        'pstore',
+        'autofs',
+        'configfs',
+        'rpc_pipefs',
+        'mqueue',
+        'debugfs',
+        'hugetlbfs',
+        'nfsd',
+        'binfmt_misc',
+        'fuse.gvfsd-fuse',
+        'fuse.gvfs-fuse-daemon',
+        'fusectl',
+        'devfs',  # mac?
+        ]
+deviceLenList = [0]
+pathLenList = [0]
+fstypeLenList = [0]
+
 
 for line in intxt:
     a = line.split()
+    # mac has a different df column output than linux
     if sys.platform.startswith('darwin'):
         if len(a) > 1:
-            if (a[1] == 'on') and not (a[3].count('devfs')) and not (a[3].count('autofs')):
-                a.remove(a[1]) # 'on'
-                alast = (len(a) - 1)
-                outtxt = ''
-                for i in a:
-                    outtxt += '%s' % i
-                    if i == a[alast]:
-                        outtxt += '\n'
-                    else:
-                        # this fixes "mounted by admin"
-                        if outtxt.endswith('mounted') or outtxt.endswith('by'):
-                            outtxt += ' '
-                        # this condenses the mount opts to be like linux
-                        elif not outtxt.endswith(','):
-                            outtxt += '\t'
-                key_val = a[1]
-                outdict[key_val] = outtxt
+            # find 'on' keyword
+            on_index = None
+            on_cnt = 0
+            for item in a:
+                if item.strip() == 'on':
+                    on_index = on_cnt
+                    break
+                on_cnt += 1
+
+            # find '(' in item, i.e. options start
+            opt_found = False
+            mount_options = ''
+            for item in a:
+                if item.count('(') > 0:
+                    opt_found = True
+                if opt_found is True:
+                    mount_options += item.strip()
+            mount_options = mount_options.replace('mountedby', 'mounted by ')
+
+            # get fstype from mount_options
+            mount_options_split = mount_options.split(',')
+            mount_fstype = mount_options_split[0].replace('(', '')
+            # rebuild mount_options without fstype
+            mount_options = mount_options.replace('{0},'.format(mount_fstype), '')
+
+            mount_device = a[0].strip()
+            mount_path = a[on_index+1].strip()
+
+            # check for stuff to skip
+            if (mount_device == 'devfs') or (mount_device == 'map'):
+                continue
+
+            outdict[mount_path.lower()] = {
+                    'device': mount_device,
+                    'path': mount_path,
+                    'fstype': mount_fstype,
+                    'options': mount_options
+                    }
+            deviceLenList.append(len(mount_device))
+            pathLenList.append(len(mount_path))
+            fstypeLenList.append(len(mount_fstype))
+
     else:
         # linux mode
         if len(a) > 4:
-            if not (a[4] == 'sysfs') and not (a[4] == 'proc') and not (a[4] == 'devtmpfs') \
-                    and not (a[4] == 'securityfs') and not (a[4] == 'tmpfs') and not (a[4] == 'devpts') \
-                    and not (a[4] == 'cgroup') and not (a[4] == 'pstore') and not(a[4] == 'autofs') \
-                    and not (a[4] == 'configfs') and not (a[4] == 'rpc_pipefs') and not (a[4] == 'mqueue') \
-                    and not (a[4] == 'debugfs') and not (a[4] == 'hugetlbfs') and not (a[4] == 'nfsd') \
-                    and not (a[4] == 'binfmt_misc') and not (a[4] == 'fuse.gvfsd-fuse') \
-                    and not (a[4] == 'fuse.gvfs-fuse-daemon') \
-                    and not (a[4] == 'fusectl'):
-                a.remove(a[1]) # 'on'
-                a.remove(a[2]) # really split() item [3], but we shifted the array to the left removing [1], 'type'
-                alast = (len(a) - 1)
-                outtxt = ''
-                for i in a:
-                    outtxt += '%s' % i
-                    if i == a[alast]:
-                        outtxt += '\n'
-                    else:
-                        outtxt += '\t'
-                key_val = a[1]
-                outdict[key_val] = outtxt
+            if a[4] in ignore_fs:
+                continue
+
+            mount_device = a[0].strip()
+            mount_path = a[2].strip()
+            mount_fstype = a[4].strip()
+            mount_options = a[5].strip()
+            outdict[mount_path.lower()] = {
+                'device': mount_device,
+                'path': mount_path,
+                'fstype': mount_fstype,
+                'options': mount_options
+                }
+            deviceLenList.append(len(mount_device))
+            pathLenList.append(len(mount_path))
+            fstypeLenList.append(len(mount_fstype))
+
+deviceMax = max(deviceLenList)
+pathMax = max(pathLenList)
+fstypeMax = max(fstypeLenList)
+deviceTab = (int(math.ceil(deviceMax / 4.0))) * 4
+if deviceTab == deviceMax:
+    deviceTab += 4
+pathTab = (int(math.ceil(pathMax / 4.0))) * 4
+if pathTab == pathMax:
+    pathTab += 4
+fstypeTab = (int(math.ceil(fstypeMax / 4.0))) * 4
+if fstypeTab == fstypeMax:
+    fstypeTab += 4
 
 outtxt = ''
 
-
 for key in sorted(outdict.iterkeys()):
-    outtxt += '%s' % outdict[key]
+    prep_device = outdict[key]['device']
+    prep_device = prep_device.ljust(deviceTab)
+    prep_path = outdict[key]['path']
+    prep_path = prep_path.ljust(pathTab)
+    prep_fstype = outdict[key]['fstype']
+    prep_fstype = prep_fstype.ljust(fstypeTab)
+    prep_options = outdict[key]['options']
+    outtxt += '{0}{1}{2}{3}\n'.format(prep_device, prep_path, prep_fstype, prep_options)
 outtxt = outtxt.rstrip('\n')
 print(outtxt)
 
