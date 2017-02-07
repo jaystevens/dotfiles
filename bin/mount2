@@ -34,6 +34,8 @@ ignore_fs = [
         'fuse.gvfsd-fuse',
         'fuse.gvfs-fuse-daemon',
         'fusectl',
+        'selinuxfs',
+        'efivarfs',
         'devfs',  # mac?
         ]
 deviceLenList = [0]
