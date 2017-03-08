@@ -2,7 +2,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014 Jason Stevens
+# Copyright (c) 2014-2017 Jason Stevens
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,17 @@
 
 import os
 import sys
-import StringIO
+if sys.version_info < (3, 0):
+    import StringIO as io
+else:
+    import io
 
 class grub2select():
     menuCount = 1
     menuData = {}
     newEntry = ''
-    grub2cfgData = StringIO.StringIO()
-    grubEnvData = StringIO.StringIO()
+    grub2cfgData = io.StringIO()
+    grubEnvData = io.StringIO()
     grub2Path = "/boot/grub2/"
     grub2cfgFile = "grub.cfg"
     grub2cfgFileEFI = "grub2.cfg"
@@ -51,7 +54,7 @@ class grub2select():
             sys.exit(0)
 
         # load grub.cfg menu data
-        self.grub2cfgData = StringIO.StringIO()
+        self.grub2cfgData = io.StringIO()
         f = open(self.grub2cfg, "r")
         self.grub2cfgData.write(f.read())
         f.close()
@@ -59,7 +62,7 @@ class grub2select():
         self.grub2cfgData.seek(0)
 
         # load grub2 env data
-        self.grubEnvData = StringIO.StringIO()
+        self.grubEnvData = io.StringIO()
         os.system("grub2-editenv list > /tmp/grub2-env.lst")
         f = open("/tmp/grub2-env.lst", "r")
         self.grubEnvData.write(f.read())
@@ -112,7 +115,11 @@ class grub2select():
             print("{0}:{2}:{1}".format(item, self.menuData[item]["name"], grubMatch))
         print("")
         self.showGrubDefault()
-        selection = raw_input("select number: ")
+        if sys.version_info < (3, 0):
+            selection = raw_input("select number: ")
+        else:
+            selection = input("select number: ")
+            selection = "{0}".format(selection)
         if not selection.isdigit():
             print("Invalid selection")
             sys.exit(0)

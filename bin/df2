@@ -4,6 +4,7 @@ import subprocess
 
 dfcmd = subprocess.Popen('/bin/df -Ph', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 intxt = dfcmd.communicate()[0]
+intxt = intxt.decode('UTF-8')
 intxt = intxt.split('\n')
 outtxt = ''
 outdict = {}
@@ -40,7 +41,7 @@ for i in deleteme:
     except Exception as e:
         pass
 
-for key in sorted(outdict.iterkeys()):
+for key in sorted(list(outdict.keys())):
     outtxt += '%s' % outdict[key]
 outtxt = outtxt.rstrip('\n')
 print(outtxt)

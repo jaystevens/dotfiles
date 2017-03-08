@@ -11,6 +11,7 @@ else:
 
 mountcmd = subprocess.Popen(mount_cmd_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 intxt = mountcmd.communicate()[0]
+intxt = intxt.decode('UTF-8')
 intxt = intxt.split('\n')
 outtxt = ''
 outdict = {}
@@ -125,7 +126,7 @@ if fstypeTab == fstypeMax:
 
 outtxt = ''
 
-for key in sorted(outdict.iterkeys()):
+for key in sorted(list(outdict.keys())):
     prep_device = outdict[key]['device']
     prep_device = prep_device.ljust(deviceTab)
     prep_path = outdict[key]['path']
