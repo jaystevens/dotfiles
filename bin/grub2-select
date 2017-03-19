@@ -108,10 +108,10 @@ class grub2select():
 
     def selectKernel(self):
         for item in sorted(self.menuData):
-            if self.menuData[item]['name'] is self.grubDefaultMatch['name']:
-                grubMatch = "*"
-            else:
-                grubMatch = " "
+            grubMatch = " "
+            if self.grubDefaultMatch is not None:
+                if self.menuData[item]['name'] is self.grubDefaultMatch['name']:
+                    grubMatch = "*"
             print("{0}:{2}:{1}".format(item, self.menuData[item]["name"], grubMatch))
         print("")
         self.showGrubDefault()
