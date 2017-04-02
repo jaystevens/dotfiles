@@ -27,7 +27,7 @@ if [ $(id -u) -eq 0 ]; then
     echo "packages as that user.  If package building fails, then"
     echo "the package is improper and needs fixing."
     echo
-    exit 255
+    #exit 255
 fi
 
 # Wipe RPM Build Directory clean
