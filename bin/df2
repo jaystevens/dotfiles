@@ -4,6 +4,7 @@ import subprocess
 
 dfcmd = subprocess.Popen('/bin/df -Ph', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 intxt = dfcmd.communicate()[0]
+intxt = intxt.decode('UTF-8')
 intxt = intxt.split('\n')
 outtxt = ''
 outdict = {}
@@ -11,7 +12,7 @@ outdict = {}
 for line in intxt:
     a = line.split()
     if len(a) > 0:
-        if not (a[0] == 'tmpfs') and not (a[0] == 'devtmpfs') and not (a[0] == 'udev') and not (a[1] == 'auto_home') and not (a[1] == '-hosts') and not (a[1] == '-static'):
+        if not (a[0] == 'tmpfs') and not (a[0] == 'devtmpfs') and not (a[0] == 'shm') and not (a[0] == 'udev') and not (a[1] == 'auto_home') and not (a[1] == '-hosts') and not (a[1] == '-static') and not (a[0].startswith('cgroup')):
             a.remove(a[0])
             alast = (len(a) - 1)
             outtxt = ''
@@ -40,7 +41,7 @@ for i in deleteme:
     except Exception as e:
         pass
 
-for key in sorted(outdict.iterkeys()):
+for key in sorted(list(outdict.keys())):
     outtxt += '%s' % outdict[key]
 outtxt = outtxt.rstrip('\n')
 print(outtxt)
