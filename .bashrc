@@ -529,9 +529,32 @@ if [ -n "$INTERACTIVE" -a -n "$LOGIN" ]; then
     osversion
     uname -npsr
     uptime
+    # this starts/reconnects to a single screen session
+    # when you login as dataman
+    if [ "$USER" = dataman ]; then
+        if [ -z "$STY" ]; then
+            echo ""
+            echo "waiting 5 seconds before starting 'screen' session"
+            echo "Press CTRL-C to keep std shell"
+            sleep 5
+            screen -aOUxRR
+            logout
+        fi
+    fi
 fi
 
 # beep
 alias beep='tput bel'
+
+# if you shell is a screen session show the standard 
+# login information
+if [ "$TERM" = screen ]; then
+    if [ -e /etc/motd ]; then
+        cat /etc/motd
+    fi
+    osversion
+    uname -npsr
+    uptime
+fi
 
 # vim: ts=4 sts=4 shiftwidth=4 expandtab
