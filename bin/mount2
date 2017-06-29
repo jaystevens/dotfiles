@@ -23,6 +23,7 @@ ignore_fs = [
         'tmpfs',
         'devpts',
         'cgroup',
+        'cgroup2',
         'pstore',
         'autofs',
         'configfs',

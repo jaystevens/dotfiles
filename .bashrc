@@ -96,6 +96,9 @@ if [ "$USER" = dataman ]; then
 fi
 
 # QT 4.8.6
+if [ -d "/usr/local/Trolltech/Qt-4.8.6/bin" ]; then
+    PATH="/usr/local/Trolltech/Qt-4.8.6/bin:$PATH"
+fi
 if [ -d "/usr/local/Trolltech/Qt-4.8.6/lib" ]; then
     LD_LIBRARY_PATH="/usr/local/Trolltech/Qt-4.8.6/lib:$LD_LIBRARY_PATH"
 fi
