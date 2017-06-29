@@ -180,8 +180,8 @@ def hardlink_files(sourcefile, destfile, stat_info, options):
             if options.verbose >= 1:
                 if options.dryrun:
                     print "Did NOT link.  Dry run"
-                print "Linked: %s" % sourcefile
-                print"     to: %s, saved %s" % (destfile, stat_info.st_size)
+                print "Linked   : %s" % sourcefile
+                print "     to  : %s, saved %s" % (destfile, stat_info.st_size)
             result = True
     return result
 
