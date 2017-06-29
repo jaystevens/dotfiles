@@ -281,7 +281,7 @@ else
     alias du1='du -h --max-depth=1 | sort -k2'
     alias du1s='date > du.txt; du -h --max-depth=1 | sort -k2 >> du.txt; chmod a+rw du.txt'
 fi
-alias fn='find . -name'
+alias fn='find . -iname'
 alias hi='history | tail -20'
 alias df='df -Ph'
 alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
