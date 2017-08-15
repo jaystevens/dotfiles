@@ -343,12 +343,9 @@ if [ -e "/etc/fedora-release" ]; then
     alias rpmbuildjay="rpmbuild -bb --with baseonly --with firmware --without degubinfo --target=`uname -m` ~/rpmbuild/SPECS/kernel.spec"
 fi
 
-# if Wowza is installed add an alias to control it's service
-# version 4
+# if Wowza is installed add an alias to control it's service - version 4+
 if [ -e "/usr/local/WowzaStreamingEngine" ]; then
     alias wse="service WowzaStreamingEngine"
-fi
-if [ -e "/usr/local/WowzaStreamingEngine" ]; then
     alias wsem="service WowzaStreamingEngineManager"
 fi
 
@@ -360,6 +357,9 @@ if [ "$USER" = dataman ]; then
     alias ln='sudo /bin/ln'
     alias iotop='sudo /usr/sbin/iotop'
     alias lsof='sudo /usr/sbin/lsof'
+    if [ -e "/usr/cvfs/bin/snfsdefrag" ]; then
+        alias snfsdefrag="sudo /usr/cvfs/bin/snfsdefrag"
+    fi
 fi
 
 # ftp-srvr sudo alias
