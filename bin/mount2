@@ -39,6 +39,7 @@ ignore_fs = [
         'selinuxfs',
         'efivarfs',
         'devfs',  # mac?
+        'bpf',
         ]
 deviceLenList = [0]
 pathLenList = [0]
