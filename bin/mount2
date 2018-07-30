@@ -40,6 +40,7 @@ ignore_fs = [
         'efivarfs',
         'devfs',  # mac?
         'bpf',
+        'fuse.jetbrains-toolbox',
         ]
 deviceLenList = [0]
 pathLenList = [0]
