@@ -28,7 +28,7 @@ MEM_USED_PERCENT = 0.0
 # run 'free' command to get memory info
 free_output = ''
 try:
-    free_cmd = 'free -bk'
+    free_cmd = 'free -k'
     p = subprocess.Popen(free_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     p.wait()
     stdout, stderr = p.communicate()
