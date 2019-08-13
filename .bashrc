@@ -411,7 +411,7 @@ fi
 # ----------------------------------------------------------------------
 
 # we always pass these to ls(1)
-if [ $UNAME = "Darwin" ]; then
+if [ $UNAME = "Darwin" ] || [ $UNAME = "FreeBSD" ]; then
     export CLICOLOR=YES
     LS_COMMON="-hBsl"
 else
