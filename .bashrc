@@ -117,6 +117,12 @@ if [ -e "/etc/redhat-release" ]; then
     fi
 fi
 
+# CUDA
+if [ -d "/usr/local/cuda" ]; then
+    PATH="/usr/local/cuda/bin:$PATH"
+    LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+fi
+
 
 # ----------------------------------------------------------------------
 # ENVIRONMENT CONFIGURATION
