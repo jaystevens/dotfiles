@@ -37,31 +37,35 @@ class grub2select():
     grub2cfgData = io.StringIO()
     grubEnvData = io.StringIO()
     grub2Path = "/boot/grub2/"
-    grub2cfgFile = "grub.cfg"
-    grub2cfgFileAlt = "grub2.cfg"
-    grub2cfg = os.path.join(grub2Path, grub2cfgFile)
-    grub2cfgAlt = os.path.join(grub2Path, grub2cfgFileAlt)
+    grub2cfgFile1 = os.path.join(grub2Path, 'grub.cfg')
+    grub2cfgFile2 = os.path.join(grub2Path, 'grub2.cfg')
+    grub2cfg = grub2cfgFile1
     grubDefault = str(None)
     grubDefaultMatch = None
 
-
-    def parseGrubCfg(self):
+    def detectGrubCfgFile(self):
         # check for alt grub2 file name
-        if not os.path.exists(self.grub2cfg):
-            if os.path.exists(self.grub2cfgAlt):
-                self.grub2cfg = self.grub2cfgAlt
+        # not sure if I messed up my fedora system EFI linking /boot/grub2/grub2.cfg instead of grub.cfg
+        if not os.path.exists(self.grub2cfgFile1):
+            if os.path.exists(self.grub2cfgFile2):
+                self.grub2cfg = self.grub2cfgFile2
 
         """read in 'grub.cfg' and 'grub2-editenv list' and parse data"""
         if not os.path.exists(self.grub2cfg):
-            print("unable to locate grub.cfg or grub2.cfg, is grub2 installed?" % self.grub2cfg)
+            print("unable to locate grub.cfg or grub2.cfg, is grub2 installed?")
             sys.exit(0)
 
-        # efi book links grub.cfg to /boot/efi/EFI/centos/grub.cfg
+        # efi boot links /boot/grub2/grub.cfg into the EFI partition
+        # centos 7: ../efi/EFI/centos/grub.cfg
+        # fedora  : ../efi/EFI/fedora/grub.cfg
         if os.path.islink(self.grub2cfg):
             link_path = os.readlink(self.grub2cfg)
             if not link_path.startswith(os.sep):
                 self.grub2cfg = os.path.abspath(os.path.join(self.grub2Path, link_path))
+            else:
+                self.grub2cfg = link_path
 
+    def parseGrubCfg(self):
         # load grub.cfg menu data
         self.grub2cfgData = io.StringIO()
         f = open(self.grub2cfg, "r")
@@ -156,9 +160,10 @@ class grub2select():
             print("Current Default: UNKNOWN")
 
     def writeGrubCfg(self):
-        os.system('grub2-mkconfig -o %s > /dev/null 2>&1' % self.grub2cfg)
+        os.system('grub2-mkconfig -o {} > /dev/null 2>&1'.format(self.grub2cfg))
 
     def main(self):
+        self.detectGrubCfgFile()
         self.writeGrubCfg()
         self.parseGrubCfg()
         self.selectKernel()
