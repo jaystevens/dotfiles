@@ -37,22 +37,29 @@ class grub2select():
     grub2cfgData = io.StringIO()
     grubEnvData = io.StringIO()
     grub2Path = "/boot/grub2/"
-    grub2cfgFile1 = os.path.join(grub2Path, 'grub.cfg')
-    grub2cfgFile2 = os.path.join(grub2Path, 'grub2.cfg')
-    grub2cfg = grub2cfgFile1
+    grub2cfgFile = os.path.join(grub2Path, 'grub.cfg')
+    grub2cfg = grub2cfgFile
+    grub2env = os.path.join(grub2Path, 'grubenv')
     grubDefault = str(None)
     grubDefaultMatch = None
 
     def detectGrubCfgFile(self):
-        # check for alt grub2 file name
-        # not sure if I messed up my fedora system EFI linking /boot/grub2/grub2.cfg instead of grub.cfg
-        if not os.path.exists(self.grub2cfgFile1):
-            if os.path.exists(self.grub2cfgFile2):
-                self.grub2cfg = self.grub2cfgFile2
+        # efi systems don't have /boot/grub2/grub.cfg
+        # use /boot/grub2/grubenv file to find the efi path to grub.cfg
+        if not os.path.exists(self.grub2cfg):
+            if os.path.exists(self.grub2env):
+                if os.path.islink(self.grub2env):
+                    link_path = os.readlink(self.grub2env)
+                    if not link_path.startswith(os.sep):
+                        link_path = os.path.abspath(os.path.join(self.grub2Path, link_path))
+                    new_grub2cfg = os.path.join(os.path.dirname(link_path), 'grub.cfg')
+                    if os.path.exists(new_grub2cfg):
+                        self.grub2cfg = new_grub2cfg
+
 
         """read in 'grub.cfg' and 'grub2-editenv list' and parse data"""
         if not os.path.exists(self.grub2cfg):
-            print("unable to locate grub.cfg or grub2.cfg, is grub2 installed?")
+            print("unable to locate grub.cfg, is grub2 installed?")
             sys.exit(0)
 
         # efi boot links /boot/grub2/grub.cfg into the EFI partition
