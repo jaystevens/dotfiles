@@ -76,7 +76,7 @@ class grub2select():
         sysconfigGrubFile = '/etc/sysconfig/grub'
 
         if not os.path.exists(sysconfigGrubFile):
-            if os.path.exists('/etc/default/grub':
+            if os.path.exists('/etc/default/grub'):
                 sysconfigGrubFile = '/etc/default/grub'
             else:
                 return
