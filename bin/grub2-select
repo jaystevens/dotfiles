@@ -42,6 +42,7 @@ class grub2select():
     grub2env = os.path.join(grub2Path, 'grubenv')
     grubDefault = str(None)
     grubDefaultMatch = None
+    BLSCFG_MODE = False
 
     def detectGrubCfgFile(self):
         # efi systems don't have /boot/grub2/grub.cfg
@@ -98,10 +99,41 @@ class grub2select():
         for line in sysconfigGrubData:
             if line.strip().lower().count('blscfg') > 0:
                 if line.strip().lower().count('true') > 0:
-                    print('BLS Mode is enabled in {}'.format(sysconfigGrubFile))
-                    print('line to edit: {}'.format(line))
-                    sys.exit(0)
+                    self.BLSCFG_MODE = True
+                    print('BLSCFG is enabled')
+                    return
+                    #print('BLS Mode is enabled in {}'.format(sysconfigGrubFile))
+                    #print('line to edit: {}'.format(line))
+                    #sys.exit(0)
 
+    def parseBLSCFG(self):
+        BLS_dir = '/boot/loader/entries'
+
+        if not os.path.exists(BLS_dir):
+            print('BLSCFG folder is missing: {}'.format(BLS_DIR))
+            sys.exit(0)
+
+        for fname in os.listdir(BLS_dir):
+            fname_path = os.path.join(BLS_dir, fname)
+            if os.path.isfile(fname_path):
+                if fname_path.lower().endswith('.conf'):
+                    menu = {"name": None, "id": None}
+                    # file name is id
+                    menu["id"] = fname.replace('.conf', '')
+                    # read file to get title
+                    fdata = io.StringIO()
+                    f = open(fname_path)
+                    fdata.write(f.read())
+                    f.close()
+                    del(f)
+                    fdata.seek(0)
+                    # walk file looking for title
+                    for line in fdata:
+                        if line.strip().lower().startswith('title'):
+                            menu["name"] = line.strip().replace('title ', '')
+                            break
+                    self.menuData[self.menuCount] = menu
+                    self.menuCount += 1
 
     def parseGrubCfg(self):
         # load grub.cfg menu data
@@ -111,15 +143,6 @@ class grub2select():
         f.close()
         del(f)
         self.grub2cfgData.seek(0)
-
-        # load grub2 env data
-        self.grubEnvData = io.StringIO()
-        os.system("grub2-editenv list > /tmp/grub2-env.lst")
-        f = open("/tmp/grub2-env.lst", "r")
-        self.grubEnvData.write(f.read())
-        f.close()
-        del(f)
-        self.grubEnvData.seek(0)
 
         # parse grub.cfg data
         self.menuData = {}
@@ -134,12 +157,28 @@ class grub2select():
                 self.menuData[self.menuCount] = menu
                 self.menuCount +=1
 
+
+    def parseGrub(self):
+        # load grub2 env data
+        self.grubEnvData = io.StringIO()
+        os.system("grub2-editenv list > /tmp/grub2-env.lst")
+        f = open("/tmp/grub2-env.lst", "r")
+        self.grubEnvData.write(f.read())
+        f.close()
+        del(f)
+        self.grubEnvData.seek(0)
+
         # parse grubEnv for default
         self.grubDefault = str(None)
         self.grubDefaultMatch = None
         for line in self.grubEnvData:
             if line.lower().startswith("saved_entry="):
                 self.grubDefault = line.replace("saved_entry=", "").strip()
+
+        if self.BLSCFG_MODE is True:
+            self.parseBLSCFG()
+        else:
+            self.parseGrubCfg()
 
         # try to match default => menu["id"]
         for item in sorted(self.menuData):
@@ -189,11 +228,18 @@ class grub2select():
 
         self.newEntry = self.menuData[selection]
 
+        # grub.cfg - if have id use it
         #if self.newEntry["id"] is not None:
         #    os.system('grub2-set-default "{0}"'.format(self.newEntry["id"]))
         #else:
         #    os.system('grub2-set-default "{0}"'.format(self.newEntry["name"]))
-        os.system('grub2-set-default "{0}"'.format(self.newEntry["name"]))
+
+        if self.BLSCFG_MODE is True:
+            # BLS prefers to use the loader config file id over title
+            os.system('grub2-set-default "{0}"'.format(self.newEntry["id"]))
+        else:
+            # grub.cfg use name
+            os.system('grub2-set-default "{0}"'.format(self.newEntry["name"]))
 
         self.writeGrubCfg()
 
@@ -210,9 +256,9 @@ class grub2select():
         self.checkBLSCFG()
         self.detectGrubCfgFile()
         self.writeGrubCfg()
-        self.parseGrubCfg()
+        self.parseGrub()
         self.selectKernel()
-        self.parseGrubCfg()
+        self.parseGrub()
         self.showGrubDefault()
 
 if __name__ == "__main__":
