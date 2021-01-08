@@ -74,7 +74,7 @@ class grub2select():
         if os.path.islink(sysconfigGrubFile):
             link_path = os.readlink(sysconfigGrubFile)
             if not link_path.startswith(os.sep):
-                sysconfigGrubFile = os.path.join('/etc/sysconfig', link_path)
+                sysconfigGrubFile = os.path.abspath(os.path.join('/etc/sysconfig', link_path))
             else:
                 sysconfigGrubFile = link_path
 
@@ -88,8 +88,8 @@ class grub2select():
         for line in sysconfigGrubData:
             if line.strip().lower().count('blscfg') > 0:
                 if line.strip().lower().count('true') > 0:
-                    print('BLS Mode is enabled in {}, please disable it to use grub2-select'.format(sysconfigGrubFile))
-                    print('line to change: {}'.format(line))
+                    print('BLS Mode is enabled in /etc/sysconfig/grub')
+                    print('line to edit: {}'.format(line))
                     sys.exit(0)
 
 
