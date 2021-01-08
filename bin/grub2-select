@@ -76,7 +76,10 @@ class grub2select():
         sysconfigGrubFile = '/etc/sysconfig/grub'
 
         if not os.path.exists(sysconfigGrubFile):
-            return false
+            if os.path.exists('/etc/default/grub':
+                sysconfigGrubFile = '/etc/default/grub'
+            else:
+                return
 
         if os.path.islink(sysconfigGrubFile):
             link_path = os.readlink(sysconfigGrubFile)
@@ -126,7 +129,8 @@ class grub2select():
             if line.strip().lower().startswith("menuentry "):
                 menu = {"name": None, "id": None}
                 menu["name"] = line.split("'")[1]
-                menu["id"] = line.split("'")[3]
+                if line.count('$menuentry_id_option') > 0:
+                    menu["id"] = line.split('$menuentry_id_option')[1].split("'")[1]
                 self.menuData[self.menuCount] = menu
                 self.menuCount +=1
 
@@ -138,10 +142,11 @@ class grub2select():
                 self.grubDefault = line.replace("saved_entry=", "").strip()
 
         # try to match default => menu["id"]
-        #for item in sorted(self.menuData):
-        #    if str(self.menuData[item]["id"]).count(self.grubDefault):
-        #        self.grubDefaultMatch = self.menuData[item]
-        #        break
+        for item in sorted(self.menuData):
+            if self.menuData[item]["id"] is not None:
+                if str(self.menuData[item]["id"]).count(self.grubDefault):
+                    self.grubDefaultMatch = self.menuData[item]
+                    break
 
         # try to match default => menu["name"]
         for item in sorted(self.menuData):
@@ -184,8 +189,11 @@ class grub2select():
 
         self.newEntry = self.menuData[selection]
 
-        os.system('grub2-set-default "{0}"'.format(self.newEntry["name"]))
-        #os.system('grub2-set-default "{0}"'.format(self.newEntry["id"]))
+        if self.newEntry["id"] is not None:
+            os.system('grub2-set-default "{0}"'.format(self.newEntry["id"]))
+        else:
+            os.system('grub2-set-default "{0}"'.format(self.newEntry["name"]))
+
         self.writeGrubCfg()
 
     def showGrubDefault(self):
