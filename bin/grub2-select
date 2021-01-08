@@ -181,14 +181,14 @@ class grub2select():
             self.parseGrubCfg()
 
         # try to match default => menu["id"]
-        for item in sorted(self.menuData):
+        for item in self.menuData.keys():
             if self.menuData[item]["id"] is not None:
                 if str(self.menuData[item]["id"]).count(self.grubDefault):
                     self.grubDefaultMatch = self.menuData[item]
                     break
 
         # try to match default => menu["name"]
-        for item in sorted(self.menuData):
+        for item in self.menuData.keys():
             try:
                 grubDefaultSplit = self.grubDefault.split(">")
                 matchData = grubDefaultSplit[len(grubDefaultSplit)-1]
@@ -199,7 +199,15 @@ class grub2select():
                 break
 
     def selectKernel(self):
-        for item in sorted(self.menuData):
+        # sort menuData
+        tmpMenuData = {}
+        tmpMenuCount = 1
+        for item in sorted(self.menuData, reverse=True, key=lambda x: self.menuData[x]['name']):
+            tmpMenuData[tmpMenuCount] = self.menuData[item]
+            tmpMenuCount += 1
+        self.menuData = tmpMenuData
+
+        for item in self.menuData.keys():
             grubMatch = " "
             if self.grubDefaultMatch is not None:
                 if self.menuData[item]['name'] is self.grubDefaultMatch['name']:
