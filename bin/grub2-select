@@ -152,6 +152,9 @@ class grub2select():
             if line.strip().lower().startswith("menuentry "):
                 menu = {"name": None, "id": None}
                 menu["name"] = line.split("'")[1]
+                # ignore system setup as default boot entry - centos 8
+                if menu["name"].lower().count('system setup') > 0:
+                    continue
                 if line.count('$menuentry_id_option') > 0:
                     menu["id"] = line.split('$menuentry_id_option')[1].split("'")[1]
                 self.menuData[self.menuCount] = menu
