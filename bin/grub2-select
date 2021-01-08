@@ -210,7 +210,7 @@ class grub2select():
         tmpMenuCount = 1
         keyList = []
         if self.BLSCFG_MODE is True:
-            keyList = sorted(self.menuData, reverse=True, key=lambda x: self.menuData[x]['version'])
+            keyList = sorted(self.menuData, reverse=False, key=lambda x: self.menuData[x]['version'])
         else:
             keyList = sorted(self.menuData.keys())
 
