@@ -117,7 +117,7 @@ class grub2select():
             fname_path = os.path.join(BLS_dir, fname)
             if os.path.isfile(fname_path):
                 if fname_path.lower().endswith('.conf'):
-                    menu = {"name": None, "id": None}
+                    menu = {"name": None, "id": None, "version": ''}
                     # file name is id
                     menu["id"] = fname.replace('.conf', '')
                     # read file to get title
@@ -131,6 +131,8 @@ class grub2select():
                     for line in fdata:
                         if line.strip().lower().startswith('title'):
                             menu["name"] = line.strip().replace('title ', '')
+                        if line.strip().lower().startswith('verson'):
+                            menu["version"] = line.strip().replace('version ', '')
                             break
                     self.menuData[self.menuCount] = menu
                     self.menuCount += 1
@@ -150,7 +152,7 @@ class grub2select():
         self.grub2cfgData.seek(0)
         for line in self.grub2cfgData:
             if line.strip().lower().startswith("menuentry "):
-                menu = {"name": None, "id": None}
+                menu = {"name": None, "id": None, "versin": ''}
                 menu["name"] = line.split("'")[1]
                 # ignore system setup as default boot entry - centos 8
                 if menu["name"].lower().count('system setup') > 0:
@@ -208,7 +210,7 @@ class grub2select():
         tmpMenuCount = 1
         keyList = []
         if self.BLSCFG_MODE is True:
-            keyList = sorted(self.menuData, reverse=True, key=lambda x: self.menuData[x]['name'])
+            keyList = sorted(self.menuData, reverse=True, key=lambda x: self.menuData[x]['version'])
         else:
             keyList = sorted(self.menuData.keys())
 
