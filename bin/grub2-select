@@ -38,20 +38,29 @@ class grub2select():
     grubEnvData = io.StringIO()
     grub2Path = "/boot/grub2/"
     grub2cfgFile = "grub.cfg"
-    grub2cfgFileEFI = "grub2.cfg"
+    grub2cfgFileAlt = "grub2.cfg"
     grub2cfg = os.path.join(grub2Path, grub2cfgFile)
-    grub2cfgEFI = os.path.join(grub2Path, grub2cfgFileEFI)
+    grub2cfgAlt = os.path.join(grub2Path, grub2cfgFileAlt)
     grubDefault = str(None)
     grubDefaultMatch = None
 
 
     def parseGrubCfg(self):
-        if os.path.exists(self.grub2cfgEFI):
-            self.grub2cfg = self.grub2cfgEFI
+        # check for alt grub2 file name
+        if not os.path.exists(self.grub2cfg):
+            if os.path.exists(self.grub2cfgAlt):
+                self.grub2cfg = self.grub2cfgAlt
+
         """read in 'grub.cfg' and 'grub2-editenv list' and parse data"""
         if not os.path.exists(self.grub2cfg):
-            print("unable to locate %s, is grub2 installed?" % self.grub2cfg)
+            print("unable to locate grub.cfg or grub2.cfg, is grub2 installed?" % self.grub2cfg)
             sys.exit(0)
+
+        # efi book links grub.cfg to /boot/efi/EFI/centos/grub.cfg
+        if os.path.islink(self.grub2cfg):
+            link_path = os.readlink(self.grub2cfg)
+            if not link_path.startswith(os.sep):
+                self.grub2cfg = os.path.abspath(os.path.join(self.grub2Path, link_path))
 
         # load grub.cfg menu data
         self.grub2cfgData = io.StringIO()
