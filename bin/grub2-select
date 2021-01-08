@@ -98,7 +98,7 @@ class grub2select():
         for line in sysconfigGrubData:
             if line.strip().lower().count('blscfg') > 0:
                 if line.strip().lower().count('true') > 0:
-                    print('BLS Mode is enabled in /etc/sysconfig/grub')
+                    print('BLS Mode is enabled in {}'.format(sysconfigGrubFile))
                     print('line to edit: {}'.format(line))
                     sys.exit(0)
 
@@ -189,10 +189,11 @@ class grub2select():
 
         self.newEntry = self.menuData[selection]
 
-        if self.newEntry["id"] is not None:
-            os.system('grub2-set-default "{0}"'.format(self.newEntry["id"]))
-        else:
-            os.system('grub2-set-default "{0}"'.format(self.newEntry["name"]))
+        #if self.newEntry["id"] is not None:
+        #    os.system('grub2-set-default "{0}"'.format(self.newEntry["id"]))
+        #else:
+        #    os.system('grub2-set-default "{0}"'.format(self.newEntry["name"]))
+        os.system('grub2-set-default "{0}"'.format(self.newEntry["name"]))
 
         self.writeGrubCfg()
 
