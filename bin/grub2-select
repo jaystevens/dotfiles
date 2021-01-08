@@ -65,6 +65,34 @@ class grub2select():
             else:
                 self.grub2cfg = link_path
 
+    def checkBLSCFG(self):
+        sysconfigGrubFile = '/etc/sysconfig/grub'
+
+        if not os.path.exists(sysconfigGrubFile):
+            return false
+
+        if os.path.islink(sysconfigGrubFile):
+            link_path = os.readlink(sysconfigGrubFile)
+            if not link_path.startswith(os.sep):
+                sysconfigGrubFile = os.path.join('/etc/sysconfig', link_path)
+            else:
+                sysconfigGrubFile = link_path
+
+        sysconfigGrubData = io.StringIO()
+        f = open(sysconfigGrubFile)
+        sysconfigGrubData.write(f.read())
+        f.close()
+        del(f)
+        sysconfigGrubData.seek(0)
+
+        for line in sysconfigGrubData:
+            if line.strip().lower().count('blscfg') > 0:
+                if line.strip().lower().count('true') > 0:
+                    print('BLS Mode is enabled in {}, please disable it to use grub2-select'.format(sysconfigGrubFile))
+                    print('line to change: {}'.format(line))
+                    sys.exit(0)
+
+
     def parseGrubCfg(self):
         # load grub.cfg menu data
         self.grub2cfgData = io.StringIO()
@@ -163,6 +191,7 @@ class grub2select():
         os.system('grub2-mkconfig -o {} > /dev/null 2>&1'.format(self.grub2cfg))
 
     def main(self):
+        self.checkBLSCFG()
         self.detectGrubCfgFile()
         self.writeGrubCfg()
         self.parseGrubCfg()
