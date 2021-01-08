@@ -206,7 +206,13 @@ class grub2select():
         rescueList = []
         tmpMenuData = {}
         tmpMenuCount = 1
-        for item in sorted(self.menuData, reverse=True, key=lambda x: self.menuData[x]['name']):
+        keyList = []
+        if self.BLSCFG_MODE is True:
+            keyList = sorted(self.menuData, reverse=True, key=lambda x: self.menuData[x]['name'])
+        else:
+            keyList = sorted(self.menuData.keys())
+
+        for item in keyList:
             if self.menuData[item]['name'].lower().count('rescue') > 0:
                 rescueList.append(item)
                 continue
