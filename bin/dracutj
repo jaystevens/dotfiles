@@ -6,6 +6,7 @@ import sys
 do_host_only = False
 do_xz_compress = False
 do_lzma_compress = False
+do_lz4_compress = False
 for arg in sys.argv:
     if arg.lower().count('host') > 0:
         do_host_only = True
@@ -16,9 +17,19 @@ for arg in sys.argv:
     if arg.lower().count('lzma') > 0:
         do_lzma_compress = True
         print('dracutj will use lzma compression (--lzma)\n')
+    if arg.lower().count('lz4') > 0:
+        do_lz4_compress = True
+        print('dracutj will use lz4 compression (--lz4)\n')
 
 # check for stupid
-if (do_xz_compress is True) and (do_lzma_compress is True):
+compress_counter = 0
+if (do_xz_compress is True):
+    compress_counter += 1
+if (do_lzma_compress is True):
+    compress_counter += 1
+if (do_lz4_compress is True):
+    compress_counter += 1
+if (compress_counter > 1):
     print('select only one type of compression\n')
     sys.exit(0)
 
@@ -33,13 +44,18 @@ if do_xz_compress is True:
     cmdline += '--xz '  # compress initramfs using xz
 if do_lzma_compress is True:
     cmdline += '--lzma '  # compress initramfs using lzma
+if do_lz4_compress is True:
+    cmdline += '--lz4 '  # compress initramfs using lz4
 
 for fname in bootlist:
     if (fname.count('initramfs') > 0) and (fname.endswith('.img')):
+        if fname.lower().count('rescue') > 0:
+            continue
         kernel = fname
         kernel = kernel.replace('.img', '')
         kernel = kernel.replace('initramfs-', '')
 
         runcmd = cmdline
         runcmd += '/boot/{0} {1}'.format(fname, kernel)
+        print("runcmd: {}".format(runcmd))
         os.system(runcmd)
