@@ -101,6 +101,14 @@ for line in intxt:
         if len(a) > 4:
             if a[4] in ignore_fs:
                 continue
+            # ubuntu - /snap/<item> squashfs - so we don't ignore all squashfs mounts
+            if a[2].strip().lower().startswith('/snap'):
+                if a[3] == 'squashfs':
+                    continue
+            # ubuntu - /run/snapd/ns/<item> nsfs - we could just ignore nsfs...
+            if a[2].strip().lower().startswith('/run/snapd/ns'):
+                if a[3] == 'nsfs':
+                    continue
 
             mount_device = a[0].strip()
             mount_path = a[2].strip()
