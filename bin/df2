@@ -13,6 +13,11 @@ for line in intxt:
     a = line.split()
     if len(a) > 0:
         if not (a[0] == 'tmpfs') and not (a[0] == 'devtmpfs') and not (a[0] == 'shm') and not (a[0] == 'udev') and not (a[1] == 'auto_home') and not (a[1] == '-hosts') and not (a[1] == '-static') and not (a[0].startswith('cgroup')) and not(a[0] == 'devfs'):
+            # hide ubuntu snap
+            if a[0].startswith('/dev/loop'):
+                if a[len(a) - 1].strip().lower().startswith('/snap'):
+                    continue
+            # process entry
             a.remove(a[0])
             alast = (len(a) - 1)
             outtxt = ''
