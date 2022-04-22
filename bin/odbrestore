@@ -1,4 +1,0 @@
-#!/bin/sh
-
-source /usr/Atempo/tina/.tina.sh
-tina_init -catalog_name mti01 -file odbsave.cod
