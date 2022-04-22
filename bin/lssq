@@ -1,0 +1,439 @@
+#!/bin/env python
+
+# lssq - list directory with sequence parser
+#
+# Copyright (C) 2022  Jason Stevens
+#
+
+import os
+import sys
+import datetime
+import traceback
+
+try:
+    import scandir
+except:
+    scandir = None
+    print('missing scandir library, please install it: pip install scandir')
+
+"""humanize.filesize.py"""
+
+suffixes = {
+    "decimal": ("kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"),
+    "binary": ("KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"),
+    "gnu": "KMGTPEZY",
+}
+
+
+def naturalsize(value, binary=False, gnu=False, format="%.1f"):
+    """Format a number of bytes like a human readable filesize (e.g. 10 kB).
+
+    By default, decimal suffixes (kB, MB) are used.
+
+    Non-GNU modes are compatible with jinja2's `filesizeformat` filter.
+
+    Examples:
+        ```pycon
+        >>> naturalsize(3000000)
+        '3.0 MB'
+        >>> naturalsize(300, False, True)
+        '300B'
+        >>> naturalsize(3000, False, True)
+        '2.9K'
+        >>> naturalsize(3000, False, True, "%.3f")
+        '2.930K'
+        >>> naturalsize(3000, True)
+        '2.9 KiB'
+
+        ```
+    Args:
+        value (int, float, str): Integer to convert.
+        binary (bool): If `True`, uses binary suffixes (KiB, MiB) with base
+            2<sup>10</sup> instead of 10<sup>3</sup>.
+        gnu (bool): If `True`, the binary argument is ignored and GNU-style
+            (`ls -sh` style) prefixes are used (K, M) with the 2**10 definition.
+        format (str): Custom formatter.
+
+    Returns:
+        str: Human readable representation of a filesize.
+    """
+    if gnu:
+        suffix = suffixes["gnu"]
+    elif binary:
+        suffix = suffixes["binary"]
+    else:
+        suffix = suffixes["decimal"]
+
+    base = 1024 if (gnu or binary) else 1000
+    bytes = float(value)
+    abs_bytes = abs(bytes)
+
+    if abs_bytes == 1 and not gnu:
+        return "%d Byte" % bytes
+    elif abs_bytes < base and not gnu:
+        return "%d Bytes" % bytes
+    elif abs_bytes < base and gnu:
+        return "%dB" % bytes
+
+    for i, s in enumerate(suffix):
+        unit = base ** (i + 2)
+        if abs_bytes < unit and not gnu:
+            return (format + " %s") % ((base * bytes / unit), s)
+        elif abs_bytes < unit and gnu:
+            return (format + "%s") % ((base * bytes / unit), s)
+    if gnu:
+        return (format + "%s") % ((base * bytes / unit), s)
+    return (format + " %s") % ((base * bytes / unit), s)
+
+
+# noinspection PyPep8Naming,PyBroadException
+def sequenceParser(fileList):
+    imgList = []
+    seqDict = {}
+    resultList = []
+    imgExtensions = ('.tst', '.dpx', '.tga', '.tif', '.tiff', '.exr', '.dng', '.dvcc', '.j2k', '.j2c', '.ari', '.cin', '.jpg', '.jpeg', '.sgi', '.png')
+
+    for file_entry in fileList:
+        if file_entry.lower().endswith(imgExtensions):
+            imgList.append(file_entry)
+        else:
+            resultList.append(file_entry)
+
+    # sort the image list
+    imgList = sorted(imgList, key=lambda s: s.lower())
+
+    # make a copy of imgList, this will be used as the dirList of image sequences later
+    dirList = list(imgList)
+
+    # use while there are still entries in imgList (modifying a list while iterating over it has problems)
+    while imgList:
+        # remove entry from imgList
+        file_entry = imgList.pop(0)
+
+        # processFilename
+        filenamePath, filenameOnly = os.path.split(file_entry)
+        filenameFront, filenameExt = os.path.splitext(filenameOnly)
+
+        # GetDigits
+        lastDigit = len(filenameFront) - 1
+        while lastDigit > -1:
+            if filenameFront[lastDigit].isdigit():
+                lastDigit += 1
+                break
+            lastDigit -= 1
+
+        firstDigit = lastDigit - 1
+        while firstDigit > -1:
+            if not filenameFront[firstDigit].isdigit():
+                firstDigit += 1
+                break
+            firstDigit -= 1
+
+        if firstDigit < 0 and lastDigit < 0:
+            firstDigit = 0
+            lastDigit = 0
+        elif firstDigit < 0 <= lastDigit:
+            firstDigit = 0
+
+        imgSeq_digitFirst = firstDigit
+        imgSeq_digitLast = lastDigit
+        imgSeq_digitLength = imgSeq_digitLast - imgSeq_digitFirst
+        imgSeq_digitsString = filenameOnly[imgSeq_digitFirst:imgSeq_digitLast]
+        try:
+            imgSeq_digitsNum = int(imgSeq_digitsString)
+        except:
+            resultList.append(file_entry)
+            continue
+
+        # folderScan
+        filenamePreDigits = filenameOnly[0:imgSeq_digitFirst]
+        filenamePostDigits = filenameOnly[imgSeq_digitLast:len(filenameOnly)]
+
+        # get directory list of file's folder (do not need to copy dirList, it will not be modified here)
+        # dirList = imgListORIG
+
+        # loop over entries in directory
+        frameNumberList = []
+        filenameOnlyLength = len(filenameOnly)  # compute this before the loop.
+        for item in dirList:
+            itemLength = len(item)  # compute this only once in loop
+            # check that the filename matches the length of the template.
+            if itemLength != filenameOnlyLength:
+                continue
+            # check that the filename before the digits match the template.
+            itemPreDigits = item[0:imgSeq_digitFirst]
+            if not itemPreDigits == filenamePreDigits:
+                continue
+            # check that the filename after the digits match the template.
+            itemPostDigits = item[imgSeq_digitLast:itemLength]
+            if not itemPostDigits == filenamePostDigits:
+                continue
+            # if digits section from template in item is numbers, add to frameNumberList (if it's not numbers, it will just continue to next dirList filename.)
+            itemDigits = item[imgSeq_digitFirst:imgSeq_digitLast]
+            if sys.version_info < (3, 0):
+                itemDigits = unicode(itemDigits, 'utf-8')
+            if itemDigits.isnumeric():
+                frameNumberList.append(int(itemDigits))
+
+        frameNumberList.sort()
+
+        # run start frame to frameNumberList fixup before doing missing file scan to reduce memory overhead
+        if len(frameNumberList) > 0:
+            # found frames from folderScan
+            # set start frame to first frame from folderScan (this may not be our actual first frame)
+            mi_start_frame = frameNumberList[0]
+            # if start frame from folderScan is less than selected file's start frame, use selected file (WARNING: this does not work for selecting a seq with file picker)
+            if mi_start_frame < imgSeq_digitsNum:
+                mi_start_frame = imgSeq_digitsNum
+                # create a copy of the frameNumberList to iterate over, since we will be modifying frameNumberList
+                frameNumberListTMP = list(frameNumberList)
+                # remove entries from frameNumberList that are before the new start frame
+                for x in frameNumberListTMP:
+                    if x < mi_start_frame:
+                        try:
+                            frameNumberList.remove(x)
+                        except:
+                            print('unable to remove from frameNumberList: {0}'.format(x))
+
+        # do missing file scan - v1, this takes lots of mem, it generates really big lists
+        # try:
+        #    imgSeq_missingList = sorted(set(range(frameNumberList[0], frameNumberList[-1] + 1)).difference(frameNumberList))
+        # except IndexError:
+        #    imgSeq_missingList = []
+
+        # do missing file scan - v2
+        # (this only works if we remove things from the frameNumbersList before our start frame,
+        # otherwise we could find a break before our start frame, which we would consider a false positive)
+        # this stops after finding the first missing frame
+        # we then break the sequence at the first missing frame
+        # then we go onto the next outer loop
+        try:
+            doBreak = False
+            imgSeq_missingList = []
+            missing_prev = frameNumberList[0]
+            for this in frameNumberList[1:]:
+                if this > missing_prev + 1:
+                    for item in range(missing_prev + 1, this):
+                        imgSeq_missingList.append(item)
+                        doBreak = True
+                        break
+                missing_prev = this
+                if doBreak is True:
+                    break
+        except IndexError:
+            imgSeq_missingList = []
+        imgSeq_missingList = sorted(imgSeq_missingList)
+
+        if len(frameNumberList) > 0:
+            # set stop frame to last frame from folderScan (this may not be our actual last frame if there are missing frames)
+            mi_stop_frame = frameNumberList[len(frameNumberList) - 1]
+            # if missing frames were found in sequence, then check the stop frame
+            if len(imgSeq_missingList) > 0:
+                for x in imgSeq_missingList:
+                    # if the missing list has an entry after our start frame, use that instead of last frame from folderScan
+                    if x > mi_start_frame:
+                        mi_stop_frame = (x - 1)  # x is the first missing frame, so the last frame of sequence is one back from it.
+                        break
+                # create a copy of the frameNumberList to iterate over, since we will be modifying frameNumberList
+                frameNumberListTMP = list(frameNumberList)
+                # remove entries from frameNumberList that are after the new stop frame
+                for x in frameNumberListTMP:
+                    if x > mi_stop_frame:
+                        try:
+                            frameNumberList.remove(x)
+                        except:
+                            print("unable to remove from frameNumberList: {0}".format(x))
+        else:
+            mi_start_frame = imgSeq_digitsNum
+            mi_stop_frame = imgSeq_digitsNum
+        del imgSeq_missingList
+        mi_frame_count = (mi_stop_frame - mi_start_frame) + 1  # add 1 to include last frame.
+        #print('mi_start_frame: %s' % mi_start_frame)
+        #print('mi_stop_frame: %s' % mi_stop_frame)
+        #print('mi_frame_count: %s' % mi_frame_count)
+
+        # remove file names from imgList that are part of the matched sequence
+        for x in frameNumberList:
+            try:
+                imgList.remove('{0}{1}{2}'.format(filenamePreDigits, '{0}'.format(x).zfill(imgSeq_digitLength), filenamePostDigits))
+            except:
+                # this will always have 1 thing that it prints this warning for, as the first filename was pop'd from the list.
+                # if you see multiples here it is probably not good
+                #print('unable to remove from imgList: {0}{1}{2}'.format(filenamePreDigits, '{0}'.format(x).zfill(imgSeq_digitLength), filenamePostDigits))
+                pass
+
+        # if we have more than one frame in sequence, add a sequence entry (this prevents [1-1] sequences)
+        if mi_frame_count > 1:
+            seqName = '{0}[{1}-{2}]{3}'.format(
+                filenamePreDigits,
+                '{0}'.format(mi_start_frame).zfill(imgSeq_digitLength),
+                '{0}'.format(mi_stop_frame).zfill(imgSeq_digitLength),
+                filenamePostDigits
+            )
+            seq_first_name = '{0}{1}{2}'.format(
+                filenamePreDigits,
+                '{0}'.format(mi_start_frame).zfill(imgSeq_digitLength),
+                filenamePostDigits
+            )
+            seqDict[seq_first_name] = {
+                'seq_name': seqName,
+                'start': mi_start_frame,
+                'stop': mi_stop_frame,
+                'count': mi_frame_count,
+                'digitsLength': imgSeq_digitLength,
+                'filenamePreDigits': filenamePreDigits,
+                'filenamePostDigits': filenamePostDigits
+            }
+        else:
+            # if we have only 1 frame in sequence, add that file name to the result file list (this is a for loop so you can change the threshold for sequence detection)
+            for x in frameNumberList:
+                resultList.append('{0}{1}{2}'.format(filenamePreDigits, '{0}'.format(x).zfill(imgSeq_digitLength), filenamePostDigits))
+
+    return seqDict, resultList
+
+def ls_seq(ls_dir, do_stat=True):
+    fileList = []
+    dirList = []
+    symList = []
+    try:
+        if scandir is not None:
+            for entry in scandir.scandir(ls_dir):
+                if entry.is_symlink():
+                    symList.append(entry.name)
+                elif entry.is_file():
+                    fileList.append(entry.name)
+                else:
+                    dirList.append(entry.name)
+        else:
+            # use os.listdir
+            for fname in os.listdir(ls_dir):
+                fname_wdir = os.path.join(ls_dir, fname)
+                if os.path.islink(fname_wdir):
+                    symList.append(fname)
+                elif os.path.isfile(fname_wdir):
+                    fileList.append(fname)
+                else:
+                    dirList.append(fname)
+    #except (PermissionError, OSError):
+    except (OSError):
+        print("error accessing directory")
+        sys.exit()
+
+    fileList = sorted(fileList, key=lambda s: s.lower())
+
+    sequenceDict, fileListNew = sequenceParser(fileList)
+
+    # v1 - build masterDict
+    #masterList = []
+    #for fname in list(sequenceDict.keys()):
+    #    masterList.append(sequenceDict[fname]['seq_name'])
+    #for fname in fileListNew:
+    #    masterList.append(fname)
+    #for fname in symList:
+    #    masterList.append(fname)
+    #
+    #masterList = sorted(masterList, key=lambda s: s.lower())
+
+    #for fname in masterList:
+    #    print('{}'.format(fname))
+
+    # v2 - with info
+    masterDict = {}
+    for fname in list(sequenceDict.keys()):
+        seq_info = sequenceDict[fname]
+        fname_size = 0
+        fname_mtime = 0
+        fname_count = 1
+        if do_stat is True:
+            sequence_start = seq_info['start']
+            sequence_stop = seq_info['stop']
+            fname_count = seq_info['count']
+            for x in range(sequence_start, sequence_stop):
+                try:
+                    sequence_fname = '{0}{1}{2}'.format(
+                        seq_info['filenamePreDigits'],
+                        '{0}'.format(x).zfill(seq_info['digitsLength']),
+                        seq_info['filenamePostDigits'])
+                    fname_stat = os.stat(sequence_fname)
+                    fname_size += fname_stat.st_size
+                    if fname_stat.st_mtime > fname_mtime:
+                        fname_mtime = fname_stat.st_mtime
+                except (OSError):
+                    continue
+        seq_name = seq_info['seq_name']
+        masterDict[seq_name] = {
+            'fname': seq_name,
+            'fname_size': naturalsize(fname_size),
+            'fname_mtime': datetime.datetime.fromtimestamp(fname_mtime).strftime("%Y-%m-%d %H:%M"),
+            'fname_count': '{} fr'.format(fname_count)
+            }
+    for fname in fileListNew:
+        fname_size = 0
+        fname_mtime = 0
+        if do_stat is True:
+            try:
+                fname_stat = os.stat(fname)
+                fname_size = fname_stat.st_size
+                fname_mtime = fname_stat.st_mtime
+            except (OSError):
+                pass
+        masterDict[fname] = {
+                'fname': fname,
+                'fname_size': naturalsize(fname_size),
+                'fname_mtime': datetime.datetime.fromtimestamp(fname_mtime).strftime("%Y-%m-%d %H:%M"),
+                'fname_count': 'file'
+                }
+
+    for item in dirList:
+        fname = item
+        fname_size = 0
+        fname_mtime = 0
+        if do_stat is True:
+            try:
+                fname_stat = os.stat(fname)
+                fname_size = fname_stat.st_size
+                fname_mtime = fname_stat.st_mtime
+            except (OSError):
+                pass
+        masterDict[fname] = {
+                'fname': fname,
+                'fname_size': naturalsize(fname_size),
+                'fname_mtime': datetime.datetime.fromtimestamp(fname_mtime).strftime("%Y-%m-%d %H:%M"),
+                'fname_count': 'dir'
+                }
+    for item in symList:
+        fname = item
+        fname_size = 0
+        fname_mtime = 0
+        if do_stat is True:
+            try:
+                fname_stat = os.stat(fname)
+                fname_size = fname_stat.st_size
+                fname_mtime = fname_stat.st_mtime
+            except (OSError):
+                pass
+        masterDict[fname] = {
+                'fname': fname,
+                'fname_size': naturalsize(fname_size),
+                'fname_mtime': datetime.datetime.fromtimestamp(fname_mtime).strftime("%Y-%m-%d %H:%M"),
+                'fname_count': 'symlink'
+                }
+
+    masterList = sorted(list(masterDict.keys()), key=lambda s: s.lower())
+
+    for fname in masterList:
+        tmp_info = masterDict[fname]
+        if do_stat is True:
+            fname_size = '{}'.format(tmp_info['fname_size']).ljust(12, ' ')
+            fname_mtime = '{}'.format(tmp_info['fname_mtime']).ljust(20, ' ')
+            fname_count = '{}'.format(tmp_info['fname_count']).ljust(12, ' ')
+            print('{0}{1}{2}{3}'.format(fname_size, fname_count, fname_mtime, tmp_info['fname']))
+            #print('{0}{1}{2}'.format(tmp_info['fname_size'], tmp_info['fname_mtime'], tmp_info['fname']))
+        else:
+            print('{}'.format(tmp_info['fname']))
+
+if __name__ == '__main__':
+    dir_to_list = os.getcwd()
+    if len(sys.argv) > 1:
+        dir_to_list = sys.argv[1]
+    ls_seq(dir_to_list, True)
