@@ -7,6 +7,7 @@
 #   
 # Copyright 2003, Brian Hatch <bri [@] ifokr.org>   
 #  Released under the GPL      
+# to list current machines supported algo's: ssh -Q key
 KNOWN_HOSTS=./ssh_known_hosts   
 SSH_ARGS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=$KNOWN_HOSTS"      
 if [ $# -lt 1 ] ; then       
@@ -18,4 +19,8 @@ do
     ssh $host $SSH_ARGS -1 echo ''
     ssh $host $SSH_ARGS -o'HostKeyAlgorithms=ssh-rsa' echo ''
     ssh $host $SSH_ARGS -o'HostKeyAlgorithms=ssh-dss' echo ''
+    ssh $host $SSH_ARGS -o'HostKeyAlgorithms=ssh-ed25519' echo ''
+    ssh $host $SSH_ARGS -o'HostKeyAlgorithms=ecdsa-sha2-nistp256' echo ''
+    ssh $host $SSH_ARGS -o'HostKeyAlgorithms=ecdsa-sha2-nistp384' echo ''
+    ssh $host $SSH_ARGS -o'HostKeyAlgorithms=ecdsa-sha2-nistp521' echo ''
 done 
