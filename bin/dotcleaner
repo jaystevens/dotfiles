@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+
+import os
+import shutil
+import sys
+import argparse
+import traceback
+
+try:
+    import scandir
+    scanner = scandir.walk
+except:
+    scanner = os.walk
+
+
+def dotcleaner(folder_path):
+    files_to_delete = []
+    dirs_to_delete = []
+
+    if folder_path is None:
+        print('please provide as path')
+        return
+
+    if not os.path.exists(folder_path):
+        print('path does not exist: {}'.format(folder_path))
+        return
+
+    try:
+        for (root, dirs, files) in scandir.walk(folder_path):
+            for f_name in files:
+                f_name_lower = f_name.lower()
+                if f_name_lower.startswith('.DS_Store'):
+                    files_to_delete.append(os.path.join(root, f_name))
+                elif f_name_lower.startswith('._.DS_Store'):
+                    files_to_delete.append(os.path.join(root, f_name))
+                elif f_name_lower.startswith('._'):
+                    files_to_delete.append(os.path.join(root, f_name))
+                elif f_name_lower.startswith('Thumbs.db'):
+                    files_to_delete.append(os.path.join(root, f_name))
+
+            for d_name in dirs:
+                if d_name == '@eaDir':
+                    dirs_to_delete.append(os.path.join(root, d_name))
+
+    except (OSError):
+        print('error accessing directory')
+        sys.exit()
+
+    files_to_delete = sorted(files_to_delete, key=lambda s: s.lower())
+    dirs_to_delete = sorted(dirs_to_delete, key=lambda s: s.lower())
+
+    for item in files_to_delete:
+        try:
+            print('removing: {}'.format(item))
+            os.remove(item)
+        except:
+            print('error removing: {}'.format(item))
+            #traceback.print_exc()
+
+    # TODO - delete directories...
+    for item in dirs_to_delete:
+        try:
+            print('removing dir: {}'.format(item))
+            # TODO - finish me
+            shutil.rmtree(item)
+        except:
+            print('error removing: {}'.format(item))
+            #traceback.print_exc()
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='dotcleaner', epilog='deletes .DS_Store and ._ files, also removes @eaDir folders')
+    parser.add_argument('-p', '--path', dest='path', default=None, help='path to clean', required=True)
+
+    args = parser.parse_args()
+    try:
+        dotcleaner(args.path)
+    except KeyboardInterrupt:
+        print('\n' + 'Byte')
+        sys.exit(0)
+    except SystemExit:
+        pass
+    except:
+        traceback.print_exc()
