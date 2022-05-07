@@ -56,11 +56,13 @@ def dotcleaner(folder_path, dry_run=False):
 
     txt_prefix = ''
     if dry_run is True:
-        txt_prefix = 'would '
+        txt_prefix = 'would remove'
+    else:
+        txt_prefix = 'removing'
 
     for item in files_to_delete:
         try:
-            print('{}removing: {}'.format(txt_prefix, item))
+            print('{}: {}'.format(txt_prefix, item))
             if dry_run is False:
                 os.remove(item)
         except:
@@ -69,7 +71,7 @@ def dotcleaner(folder_path, dry_run=False):
 
     for item in dirs_to_delete:
         try:
-            print('{}removing dir: {}'.format(txt_prefix, item))
+            print('{} dir: {}'.format(txt_prefix, item))
             if dry_run is False:
                 shutil.rmtree(item)
         except:
