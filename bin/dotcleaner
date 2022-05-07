@@ -11,9 +11,11 @@ try:
     scanner = scandir.walk
 except:
     scanner = os.walk
+    if sys.version_info.major == 2:
+        print('python2 built-in os.walk is very slow\nconsider installing scandir module or upgrading to python3.5+')
 
 
-def dotcleaner(folder_path):
+def dotcleaner(folder_path, dry_run=False):
     files_to_delete = []
     dirs_to_delete = []
 
@@ -21,12 +23,15 @@ def dotcleaner(folder_path):
         print('please provide as path')
         return
 
+    folder_path = os.path.realpath(folder_path)
+    folder_path = os.path.normpath(folder_path)
+
     if not os.path.exists(folder_path):
         print('path does not exist: {}'.format(folder_path))
         return
 
     try:
-        for (root, dirs, files) in scandir.walk(folder_path):
+        for (root, dirs, files) in scanner(folder_path):
             for f_name in files:
                 f_name_lower = f_name.lower()
                 if f_name_lower.startswith('.DS_Store'):
@@ -49,20 +54,24 @@ def dotcleaner(folder_path):
     files_to_delete = sorted(files_to_delete, key=lambda s: s.lower())
     dirs_to_delete = sorted(dirs_to_delete, key=lambda s: s.lower())
 
+    txt_prefix = ''
+    if dry_run is True:
+        txt_prefix = 'would '
+
     for item in files_to_delete:
         try:
-            print('removing: {}'.format(item))
-            os.remove(item)
+            print('{}removing: {}'.format(txt_prefix, item))
+            if dry_run is False:
+                os.remove(item)
         except:
             print('error removing: {}'.format(item))
             #traceback.print_exc()
 
-    # TODO - delete directories...
     for item in dirs_to_delete:
         try:
-            print('removing dir: {}'.format(item))
-            # TODO - finish me
-            shutil.rmtree(item)
+            print('{}removing dir: {}'.format(txt_prefix, item))
+            if dry_run is False:
+                shutil.rmtree(item)
         except:
             print('error removing: {}'.format(item))
             #traceback.print_exc()
@@ -71,10 +80,11 @@ def dotcleaner(folder_path):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='dotcleaner', epilog='deletes .DS_Store and ._ files, also removes @eaDir folders')
     parser.add_argument('-p', '--path', dest='path', default=None, help='path to clean', required=True)
+    parser.add_argument('-n', '--dry-run', dest='dryrun', default=False, action='store_true', help='dry run (do not remove files)')
 
     args = parser.parse_args()
     try:
-        dotcleaner(args.path)
+        dotcleaner(args.path, args.dryrun)
     except KeyboardInterrupt:
         print('\n' + 'Byte')
         sys.exit(0)
