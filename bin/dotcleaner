@@ -33,14 +33,14 @@ def dotcleaner(folder_path, dry_run=False):
     try:
         for (root, dirs, files) in scanner(folder_path):
             for f_name in files:
-                f_name_lower = f_name.lower()
-                if f_name_lower.startswith('.DS_Store'):
+                #f_name_lower = f_name.lower()
+                if f_name == '.DS_Store':
                     files_to_delete.append(os.path.join(root, f_name))
-                elif f_name_lower.startswith('._.DS_Store'):
+                elif f_name == '._.DS_Store':
                     files_to_delete.append(os.path.join(root, f_name))
-                elif f_name_lower.startswith('._'):
+                elif f_name.startswith('._'):
                     files_to_delete.append(os.path.join(root, f_name))
-                elif f_name_lower.startswith('Thumbs.db'):
+                elif f_name == 'Thumbs.db':
                     files_to_delete.append(os.path.join(root, f_name))
 
             for d_name in dirs:
