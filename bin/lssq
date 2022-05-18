@@ -354,7 +354,7 @@ def ls_seq(ls_dir, do_stat=True):
                         seq_info['filenamePreDigits'],
                         '{0}'.format(x).zfill(seq_info['digitsLength']),
                         seq_info['filenamePostDigits'])
-                    fname_stat = os.stat(sequence_fname)
+                    fname_stat = os.stat(os.path.abspath(os.path.join(ls_dir, sequence_fname)))
                     fname_size += fname_stat.st_size
                     if fname_stat.st_mtime > fname_mtime:
                         fname_mtime = fname_stat.st_mtime
