@@ -372,7 +372,7 @@ def ls_seq(ls_dir, do_stat=True):
         fname_mtime = 0
         if do_stat is True:
             try:
-                fname_stat = os.stat(fname)
+                fname_stat = os.stat(os.path.abspath(os.path.join(ls_dir, fname)))
                 fname_size = fname_stat.st_size
                 fname_mtime = fname_stat.st_mtime
             except (OSError):
@@ -390,7 +390,7 @@ def ls_seq(ls_dir, do_stat=True):
         fname_mtime = 0
         if do_stat is True:
             try:
-                fname_stat = os.stat(fname)
+                fname_stat = os.stat(os.path.abspath(os.path.join(ls_dir, fname)))
                 fname_size = fname_stat.st_size
                 fname_mtime = fname_stat.st_mtime
             except (OSError):
@@ -407,7 +407,7 @@ def ls_seq(ls_dir, do_stat=True):
         fname_mtime = 0
         if do_stat is True:
             try:
-                fname_stat = os.stat(fname)
+                fname_stat = os.stat(os.path.abspath(os.path.join(ls_dir, fname)))
                 fname_size = fname_stat.st_size
                 fname_mtime = fname_stat.st_mtime
             except (OSError):
