@@ -397,7 +397,8 @@ def ls_seq(ls_dir, do_stat=True):
                 pass
         masterDict[fname] = {
                 'fname': fname,
-                'fname_size': naturalsize(fname_size, binary=True),
+                #'fname_size': naturalsize(fname_size, binary=True),
+                'fname_size': 'unk',
                 'fname_mtime': datetime.datetime.fromtimestamp(fname_mtime).strftime("%Y-%m-%d %H:%M"),
                 'fname_count': 'dir'
                 }
