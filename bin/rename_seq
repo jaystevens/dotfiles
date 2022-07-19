@@ -1,0 +1,149 @@
+#!/bin/env python
+
+# rename_seq - rename sequence
+#
+# Copyright (c) 2022  Jason Stevens
+#
+
+import os
+import sys
+import argparse
+import traceback
+
+def rename_seq(
+        src_file_prefix,
+        dst_file_prefix,
+        src_start_frame_str,
+        src_end_frame_str,
+        dst_start_frame_str,
+        src_extension,
+        silent=False):
+
+    # if dst start frame not given, use src start frame
+    if dst_start_frame_str is None:
+        dst_start_frame_str = src_start_frame_str
+
+    try:
+        src_frame_padding_len = len(src_start_frame_str)
+    except KeyboardInterrupt:
+        print('CTRL-C detected, exiting')
+        return
+    except:
+        print('unable to determine source frame number padding')
+        traceback.print_exc()
+        return
+
+    try:
+        src_start_frame_num = int(src_start_frame_str)
+    except KeyboardInterrupt:
+        print('CTRL-C detected, exiting')
+        return
+    except:
+        print('unable to convert source start frame number to an integer')
+        traceback.print_exc()
+        return
+
+    try:
+        src_end_frame_num = int(src_end_frame_str)
+    except KeyboardInterrupt:
+        print('CTRL-C detected, exiting')
+        return
+    except:
+        print('unable to convert source end frame number to an integer')
+        traceback.print_exc()
+        return
+
+    try:
+        dst_frame_padding_len = len(dst_start_frame_str)
+    except KeyboardInterrupt:
+        print('CTRL-C detected, exiting')
+        return
+    except:
+        print('unable to determine destination frame number padding')
+        traceback.print_exc()
+        return
+
+    try:
+        dst_start_frame_num = int(dst_start_frame_str)
+    except KeyboardInterrupt:
+        print('CTRL-C detected, exiting')
+        return
+    except:
+        print('unable to convert destination start frame number to an integer')
+        traceback.print_exc()
+        return
+
+    frame_num_diff = dst_start_frame_num - src_start_frame_num
+
+
+    if silent is True:
+        print('rename_seq running in silent mode')
+
+    frame_cnt = src_start_frame_num
+
+    while (frame_cnt <= src_end_frame_num):
+        frame_in_num = frame_cnt
+        frame_out_num = frame_in_num + frame_num_diff
+        frame_in_str = '{}'.format(frame_in_num).zfill(src_frame_padding_len)
+        frame_out_str = '{}'.format(frame_out_num).zfill(dst_frame_padding_len)
+
+        old_file_name = '{0}{1}{2}'.format(src_file_prefix, frame_in_str, src_extension)
+        new_file_name = '{0}{1}{2}'.format(dst_file_prefix, frame_out_str, src_extension)
+
+        # make sure old file name exists
+        if not os.path.exists(old_file_name):
+            print('source file does not exist: {}'.format(old_file_name))
+            # advance to next file
+            frame_cnt += 1
+            continue
+        if os.path.exists(new_file_name):
+            print('destination file already exists: {}'.format(new_file_name))
+            # advance to next file
+            frame_cnt += 1
+            continue
+        if silent is False:
+            print('Converting {} to {}'.format(old_file_name, new_file_name))
+        try:
+            os.rename(old_file_name, new_file_name)
+        except KeyboardInterrupt:
+            print('CTRL-C detected, exiting')
+            return
+        except:
+            print('error renaming {} to {}'.format(old_file_name, new_file_name))
+            traceback.print_exc()
+
+        # advance to next file
+        frame_cnt += 1
+
+    print('rename_seq complete! bye!')
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="sequence renamer")
+    parser.add_argument('-s', '--src', dest='src_file_prefix', default=None, type=str, help="source file prefix (including . seperator)", required=True)
+    parser.add_argument('-d', '--dst', dest='dst_file_prefix', default=None, type=str, help="destination file prefix (including . seperator)", required=True)
+    parser.add_argument('-f1', '--sf', dest='src_start_frame_str', default=None, type=str, help="source start frame", required=True)
+    parser.add_argument('-f2', '--ef', dest='src_end_frame_str', default=None, type=str, help="source end frame", required=True)
+    parser.add_argument('-f3', '--nf', dest='dst_start_frame_str', default=None, type=str, help="destination start frame (if not specified use src start frame)", required=False)
+    parser.add_argument('-e', '--ext', dest='src_extension', default=None, type=str, help="source extension (including . seperator, i.e. '.dpx'/'.tif'/'.exr')", required=True)
+    parser.add_argument('-x', '--silent', dest='silent', default=False, action='store_true', help="do not print out per frame information", required=False)
+    mainargs = parser.parse_args()
+
+    try:
+        rename_seq(
+                mainargs.src_file_prefix,
+                mainargs.dst_file_prefix,
+                mainargs.src_start_frame_str,
+                mainargs.src_end_frame_str,
+                mainargs.dst_start_frame_str,
+                mainargs.src_extension,
+                mainargs.silent
+                )
+    except KeyboardInterrupt:
+        print('CTRL-C detected, exiting')
+        sys.exit()
+    except SystemExit:
+        pass
+    except:
+        traceback.print_exc()
+
+

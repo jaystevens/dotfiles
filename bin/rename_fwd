@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+
+if ($#ARGV !=  5 ) {
+	printf("Usage: rename Sourcefile_prefix(include seperator) DestFile_prefix(include seperator) startFr endFr New_startFr .ext\n");
+	printf("Description: Renames a sequence normally \n");
+	exit(1);
+	}
+
+$SourceFile = $ARGV[0];
+$DestFile = $ARGV[1];
+$StartFrame = $ARGV[2];
+$EndFrame = $ARGV[3];
+$NewStartFrame = $ARGV[4];
+$Ext = $ARGV[5];
+
+$FrameDiff = $NewStartFrame - $StartFrame;
+
+$A = "%0" . length($NewStartFrame) . "d"; 
+$B = "%0" . length($StartFrame) . "d";
+
+while ($StartFrame <= $EndFrame) {
+	$StartFrameOut = $StartFrame + $FrameDiff;
+	$StartFrameOut = sprintf($A, $StartFrameOut);
+
+	$StartFrame = sprintf($B, $StartFrame);
+	
+        printf ("Converting $SourceFile$StartFrame$Ext to $DestFile$StartFrameOut$Ext \n");
+	system ("/bin/mv   $SourceFile$StartFrame$Ext $DestFile$StartFrameOut$Ext \n");
+
+	$StartFrame++;
+
+}
