@@ -281,6 +281,24 @@ if [ $UNAME = "Darwin" ]; then
 fi
 
 # ----------------------------------------------------------------------
+# whatshell
+# ----------------------------------------------------------------------
+
+function whatshell() {
+    SHELL_NAME="Unknown"
+    SHELL_VER=""
+
+    if [ -n "$BASH_VERSION" ]; then
+        SHELL_NAME="BASH"
+        SHELL_VER="${BASH_VERSION}"
+    elif [ -n "$ZSH_VERSION" ]; then
+        SHELL_NAME="ZSH"
+        SHELL_VER="$ZSH_VERSION"
+    fi
+    echo ${SHELL_NAME} ${SHELL_VER}
+}
+
+# ----------------------------------------------------------------------
 # ALIASES / FUNCTIONS
 # ----------------------------------------------------------------------
 
