@@ -530,12 +530,91 @@ fi
 # MOTD / FORTUNE
 # -------------------------------------------------------------------
 
+if [ $UNAME = "Darwin" ]; then
+    machwversion () {
+        HW_NAME=""
+        HW_MODE=$(sysctl -n hw.model 2>/dev/null)
+
+        # Macmini
+        if [ "${HW_MODEL}" == "Macmini7,1" ]; then
+            HW_NAME="Mac Mini (Late 2014)"
+        elif [ "${HW_MODEL}" == "Macmini8,1" ]; then
+            HW_NAME="Mac Mini (Late 2018)"
+        elif [ "${HW_MODEL}" == "Macmini9,1" ]; then
+            HW_NAME="Mac Mini (Late 2020) [M1]"
+        elif [ "${HW_MODEL}" == Macmini* ]; then
+            HW_NAME="Mac Mini"
+        fi
+
+        # Mac (Studio)
+        if [ "${HW_MODEL}" == "Mac13,1" ]; then
+            HW_NAME="Mac Studio (2022) [M1 Max]"
+        elif [ "${HW_MODEL}" == "Mac13,2" ]; then
+            HW_NAME="Mac Studio (2022) [M1 Ultra]"
+        fi
+
+        # MacPro
+        if [ "${HW_MODEL}" == "MacPro6,1" ]; then
+            HW_NAME="Mac Pro (Late 2013) [TrashCan]"
+        elif [ "${HW_MODEL}" == "MacPro7,1" ]; then
+            HW_NAME="Mac Pro (2019) [Lattice]"
+        elif [ "${HW_MODEL}" == MacPro* ]; then
+            HW_NAME="Mac Pro"
+        fi
+
+        # iMac
+        if [ "${HW_MODEL}" == "iMac19,1" ]; then
+            HW_NAME="iMac (Early 2019)"
+        elif [ "${HW_MODEL}" == "iMac19,2" ]; then
+            HW_NAME="iMac (Early 2019)"
+        elif [ "${HW_MODEL}" == "iMac20,1" ]; then
+            HW_NAME="iMac (Mid 2020)"
+        elif [ "${HW_MODEL}" == "iMac20,2" ]; then
+            HW_NAME="iMac (Mid 2020)"
+        elif [ "${HW_MODEL}" == "iMac21,1" ]; then
+            HW_NAME="iMac (2021) [M1]"
+        elif [ "${HW_MODEL}" == "iMac21,2" ]; then
+            HW_NAME="iMac (2021) [M1]"
+        elif [ "${HW_MODEL}" == iMac* ]; then
+            HW_NAME="iMac"
+        fi
+        
+        # other hardware I just do not care about
+        if [ "${HW_MODEL}" == MacBookPro* ]; then
+            HW_NAME="MacBook Pro"
+        elif [ "${HW_MODEL}" == MacBookAir* ]; then
+            HW_NAME="MacBook Air"
+        elif [ "${HW_MODEL}" == MacBook* ]; then
+            HW_NAME="MacBook"
+        fi
+
+        echo ${HW_MODEL} "-" ${HW_NAME}
+
+    }
+fi
+
 osversion () {
     # print mac version
     if [ $UNAME = "Darwin" ]; then
+        # print macOS version
         MACVER_PART1=$(sw_vers -productName)
         MACVER_PART2=$(sw_vers -productVersion)
         echo $MACVER_PART1 $MACVER_PART2
+        
+        # print macOS CPU
+        MAC_CPU_TYPE=$(uname -m)
+        MAC_CPU="Unknown"
+        if [ "${MAC_CPU_TYPE}" == "i386" ]; then
+            MAC_CPU="Intel"
+        elif [ "${MAC_CPU_TYPE}" == "x86_64" ]; then
+            MAC_CPU="Intel"
+        elif [ "${MAC_CPU_TYPE}" == "arm64" ; then
+            MAC_CPU="AppleSilicon"
+        fi    
+        echo "CPU:" ${MAC_CPU}
+        
+        # print mac model info
+        machwversion
     else
         # print linux os dist and version
         if [ -e "/usr/bin/lsb_release" ]; then
