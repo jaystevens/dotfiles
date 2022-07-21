@@ -214,11 +214,6 @@ if [ "$LOGNAME" = "root" ]; then
     COLOR1="${RED}"
     COLOR2="${BROWN}"
     P="#"
-elif hostname | grep -q '\.github\.'; then
-    GITHUB=true
-    COLOR1="\[\e[0;94m\]"
-    COLOR2="\[\e[0;92m\]"
-    P="\$"
 else
     COLOR1="${BLUE}"
     COLOR2="${BROWN}"
