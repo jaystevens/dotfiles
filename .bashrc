@@ -607,7 +607,7 @@ if [ $UNAME = "Darwin" ]; then
             HW_NAME="MacBook"
         fi
 
-        echo ${HW_MODEL} "-" ${HW_NAME}
+        echo ${HW_NAME} "-" ${HW_MODEL}
     }
 fi
 
