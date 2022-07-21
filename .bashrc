@@ -546,8 +546,13 @@ if [ $UNAME = "Darwin" ]; then
     }
     
     mac_hw_info () {
-        HW_NAME=""
-        HW_MODE=$(sysctl -n hw.model 2>/dev/null)
+        HW_MODEL=$(sysctl -n hw.model 2>/dev/null)
+        HW_NAME="Unknown"
+
+        # VMware
+        if [ "${HW_MODEL}" == VMware* ]; then
+            HW_NAME="VMware"
+        fi
 
         # Macmini
         if [ "${HW_MODEL}" == "Macmini7,1" ]; then
