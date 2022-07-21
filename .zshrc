@@ -640,7 +640,7 @@ if [ $UNAME = "Darwin" ]; then
         HW_NAME="Unknown"
 
         # VMware
-        if [ "${HW_MODEL}" == VMware* ]; then
+        if [[ "${HW_MODEL}" == VMware* ]]; then
             HW_NAME="VMware"
         fi
 
@@ -651,7 +651,7 @@ if [ $UNAME = "Darwin" ]; then
             HW_NAME="Mac Mini (Late 2018)"
         elif [ "${HW_MODEL}" == "Macmini9,1" ]; then
             HW_NAME="Mac Mini (Late 2020) [M1]"
-        elif [ "${HW_MODEL}" == Macmini* ]; then
+        elif [[ "${HW_MODEL}" == Macmini* ]]; then
             HW_NAME="Mac Mini"
         fi
 
@@ -667,7 +667,7 @@ if [ $UNAME = "Darwin" ]; then
             HW_NAME="Mac Pro (Late 2013) [TrashCan]"
         elif [ "${HW_MODEL}" == "MacPro7,1" ]; then
             HW_NAME="Mac Pro (2019) [Lattice]"
-        elif [ "${HW_MODEL}" == MacPro* ]; then
+        elif [[ "${HW_MODEL}" == MacPro* ]]; then
             HW_NAME="Mac Pro"
         fi
 
@@ -684,16 +684,16 @@ if [ $UNAME = "Darwin" ]; then
             HW_NAME="iMac (2021) [M1]"
         elif [ "${HW_MODEL}" == "iMac21,2" ]; then
             HW_NAME="iMac (2021) [M1]"
-        elif [ "${HW_MODEL}" == iMac* ]; then
+        elif [[ "${HW_MODEL}" == iMac* ]]; then
             HW_NAME="iMac"
         fi
         
         # other hardware I just do not care about
-        if [ "${HW_MODEL}" == MacBookPro* ]; then
+        if [[ "${HW_MODEL}" == MacBookPro* ]]; then
             HW_NAME="MacBook Pro"
-        elif [ "${HW_MODEL}" == MacBookAir* ]; then
+        elif [[ "${HW_MODEL}" == MacBookAir* ]]; then
             HW_NAME="MacBook Air"
-        elif [ "${HW_MODEL}" == MacBook* ]; then
+        elif [[ "${HW_MODEL}" == MacBook* ]]; then
             HW_NAME="MacBook"
         fi
 
