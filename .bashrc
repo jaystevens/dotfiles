@@ -535,6 +535,7 @@ if [ $UNAME = "Darwin" ]; then
             # print macOS CPU
         MAC_CPU_TYPE=$(uname -m)
         MAC_CPU="Unknown"
+
         if [ "${MAC_CPU_TYPE}" == "i386" ]; then
             MAC_CPU="Intel"
         elif [ "${MAC_CPU_TYPE}" == "x86_64" ]; then
@@ -543,7 +544,7 @@ if [ $UNAME = "Darwin" ]; then
             MAC_CPU="AppleSilicon"
         fi
         
-        echo "Mac Proc: ${MAC_CPU}"
+        echo "Mac CPU: ${MAC_CPU}"
     }
     
     mac_hw_info () {
@@ -608,7 +609,7 @@ if [ $UNAME = "Darwin" ]; then
             HW_NAME="MacBook"
         fi
 
-        echo "Mac HW: ${HW_NAME} - ${HW_MODEL}"
+        echo "Mac HW : ${HW_NAME} - ${HW_MODEL}"
     }
 fi
 
@@ -634,8 +635,8 @@ if [ -n "$INTERACTIVE" -a -n "$LOGIN" ]; then
     uname -npsr
     uptime
     if [ $UNAME = "Darwin" ]; then
-        mac_cpu_info
         mac_hw_info
+        mac_cpu_info
     fi
     # this starts/reconnects to a single screen session
     # when you login as dataman
