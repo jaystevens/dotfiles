@@ -467,7 +467,12 @@ alias postgwho='ps -ef | grep -i "postgres: postgres"'
 
 # setup command completion
 autoload -U compinit
-compinit
+if [ $UNAME = "Darwin" ]; then
+    # -u disable insecure check, required on macOS 10.14 vm
+    compinit -u
+else
+    compinit
+fi
 
 zstyle ':completion:*' list-colors ''
 # enable command completion menu
