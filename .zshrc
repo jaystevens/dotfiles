@@ -485,8 +485,8 @@ setopt complete_in_word
 setopt always_to_end
 
 # should this be in keybindings?
-bindkey -M menuselect '^o' accept-and-infer-next-history
-zstyle ':completion:*:*:*:*:*' menu select
+#bindkey -M menuselect '^o' accept-and-infer-next-history
+#zstyle ':completion:*:*:*:*:*' menu select
 
 # case insensitive (all), partial-word and substring completion
 if [[ "$CASE_SENSITIVE" = true ]]; then
@@ -554,6 +554,11 @@ autoload -U +X bashcompinit && bashcompinit
 
 # -- END -- https://github.com/ohmyzsh/ohmyzsh/blob/master/lib/completion.zsh
 
+# do bash style completion
+unsetopt menu_complete
+unsetopt auto_menu
+zstyle ':completion:::*:default' menu no select
+# disable from above: zstyle ':completion:*:*:*:*:*' menu select
 
 # disable command completion reccommending sudo
 zstyle ':completion::complete:*' gain-privileges 0
