@@ -523,7 +523,12 @@ else
 fi
 
 # if the dircolors utility is available, set that up to
-dircolors="$(type -P gdircolors dircolors | head -1)"
+#dircolors="$(type -P gdircolors dircolors | head -1)"
+# find dircolor or gdircolors on macOS
+dircolors=$(which dircolors 2>/dev/null)
+if [ -n "$dircolors" ]; then
+    dircolors=$(which gdircolors 2>/dev/null)
+fi
 if [ -n "$dircolors" ]; then
     COLORS=/etc/DIR_COLORS
     test -e "/etc/DIR_COLORS.$TERM"   && COLORS="/etc/DIR_COLORS.$TERM"
