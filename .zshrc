@@ -475,6 +475,8 @@ if [ $UNAME = "Darwin" ]; then
 else
     compinit
 fi
+zmodload -i zsh/complist
+
 
 # -- START -- https://github.com/ohmyzsh/ohmyzsh/blob/master/lib/completion.zsh
 
@@ -487,7 +489,7 @@ setopt complete_in_word
 setopt always_to_end
 
 # should this be in keybindings?
-#bindkey -M menuselect '^o' accept-and-infer-next-history
+bindkey -M menuselect '^o' accept-and-infer-next-history
 #zstyle ':completion:*:*:*:*:*' menu select
 
 # case insensitive (all), partial-word and substring completion
