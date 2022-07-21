@@ -539,10 +539,11 @@ if [ $UNAME = "Darwin" ]; then
             MAC_CPU="Intel"
         elif [ "${MAC_CPU_TYPE}" == "x86_64" ]; then
             MAC_CPU="Intel"
-        elif [ "${MAC_CPU_TYPE}" == "arm64" ; then
+        elif [ "${MAC_CPU_TYPE}" == "arm64" ]; then
             MAC_CPU="AppleSilicon"
-        fi    
-        echo "CPU:" ${MAC_CPU}
+        fi
+        
+        echo "Mac Proc: ${MAC_CPU}"
     }
     
     mac_hw_info () {
@@ -607,7 +608,7 @@ if [ $UNAME = "Darwin" ]; then
             HW_NAME="MacBook"
         fi
 
-        echo ${HW_NAME} "-" ${HW_MODEL}
+        echo "Mac HW: ${HW_NAME} - ${HW_MODEL}"
     }
 fi
 
