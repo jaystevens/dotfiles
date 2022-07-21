@@ -621,7 +621,21 @@ fi
 # -------------------------------------------------------------------
 
 if [ $UNAME = "Darwin" ]; then
-    machwversion () {
+    mac_cpu_info () {
+            # print macOS CPU
+        MAC_CPU_TYPE=$(uname -m)
+        MAC_CPU="Unknown"
+        if [ "${MAC_CPU_TYPE}" == "i386" ]; then
+            MAC_CPU="Intel"
+        elif [ "${MAC_CPU_TYPE}" == "x86_64" ]; then
+            MAC_CPU="Intel"
+        elif [ "${MAC_CPU_TYPE}" == "arm64" ; then
+            MAC_CPU="AppleSilicon"
+        fi    
+        echo "CPU:" ${MAC_CPU}
+    }
+    
+    mac_hw_info () {
         HW_NAME=""
         HW_MODE=$(sysctl -n hw.model 2>/dev/null)
 
@@ -679,7 +693,6 @@ if [ $UNAME = "Darwin" ]; then
         fi
 
         echo ${HW_MODEL} "-" ${HW_NAME}
-
     }
 fi
 
@@ -690,21 +703,6 @@ osversion () {
         MACVER_PART1=$(sw_vers -productName)
         MACVER_PART2=$(sw_vers -productVersion)
         echo $MACVER_PART1 $MACVER_PART2
-        
-        # print macOS CPU
-        MAC_CPU_TYPE=$(uname -m)
-        MAC_CPU="Unknown"
-        if [ "${MAC_CPU_TYPE}" == "i386" ]; then
-            MAC_CPU="Intel"
-        elif [ "${MAC_CPU_TYPE}" == "x86_64" ]; then
-            MAC_CPU="Intel"
-        elif [ "${MAC_CPU_TYPE}" == "arm64" ; then
-            MAC_CPU="AppleSilicon"
-        fi    
-        echo "CPU:" ${MAC_CPU}
-        
-        # print mac model info
-        machwversion
     else
         # print linux os dist and version
         if [ -e "/usr/bin/lsb_release" ]; then
@@ -719,6 +717,10 @@ if [ -n "$INTERACTIVE" -a -n "$LOGIN" ]; then
     osversion
     uname -npsr
     uptime
+    if [ $UNAME = "Darwin" ]; then
+        mac_cpu_info
+        mac_hw_info
+    fi
     # this starts/reconnects to a single screen session
     # when you login as dataman
     if [ "$USER" = dataman ]; then
