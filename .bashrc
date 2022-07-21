@@ -95,14 +95,6 @@ if [ "$USER" = dataman ]; then
     fi
 fi
 
-# QT 4.8.6
-if [ -d "/usr/local/Trolltech/Qt-4.8.6/bin" ]; then
-    PATH="/usr/local/Trolltech/Qt-4.8.6/bin:$PATH"
-fi
-if [ -d "/usr/local/Trolltech/Qt-4.8.6/lib" ]; then
-    LD_LIBRARY_PATH="/usr/local/Trolltech/Qt-4.8.6/lib:$LD_LIBRARY_PATH"
-fi
-
 # on redhat some things compile into lib, some into lib64
 if [ -e "/etc/redhat-release" ]; then
     # add "32bit" lib
