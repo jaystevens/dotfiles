@@ -333,6 +333,8 @@ if [ $UNAME = "Darwin" ]; then
 
     # setup java environment. puke.
     export JAVA_HOME="/System/Library/Frameworks/JavaVM.framework/Home"
+    
+    alias mac_hw_profile="system_profiler SPHardwareDataType"
 fi
 
 # ----------------------------------------------------------------------
