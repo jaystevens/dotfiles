@@ -532,15 +532,15 @@ fi
 
 if [ $UNAME = "Darwin" ]; then
     mac_cpu_info () {
-            # print macOS CPU
+        # print mac CPU type
         MAC_CPU_TYPE=$(uname -m)
         MAC_CPU="Unknown"
 
-        if [ "${MAC_CPU_TYPE}" == "i386" ]; then
+        if [ "${MAC_CPU_TYPE}" = "i386" ]; then
             MAC_CPU="Intel"
-        elif [ "${MAC_CPU_TYPE}" == "x86_64" ]; then
+        elif [ "${MAC_CPU_TYPE}" = "x86_64" ]; then
             MAC_CPU="Intel"
-        elif [ "${MAC_CPU_TYPE}" == "arm64" ]; then
+        elif [ "${MAC_CPU_TYPE}" = "arm64" ]; then
             MAC_CPU="AppleSilicon"
         fi
         
@@ -548,64 +548,65 @@ if [ $UNAME = "Darwin" ]; then
     }
     
     mac_hw_info () {
+        # print mac hardware and hw.model
         HW_MODEL=$(sysctl -n hw.model 2>/dev/null)
         HW_NAME="Unknown"
 
         # VMware
-        if [[ "${HW_MODEL}" == VMware* ]]; then
+        if [[ "${HW_MODEL}" = VMware* ]]; then
             HW_NAME="VMware"
         fi
 
         # Macmini
-        if [ "${HW_MODEL}" == "Macmini7,1" ]; then
+        if [ "${HW_MODEL}" = "Macmini7,1" ]; then
             HW_NAME="Mac Mini (Late 2014)"
-        elif [ "${HW_MODEL}" == "Macmini8,1" ]; then
+        elif [ "${HW_MODEL}" = "Macmini8,1" ]; then
             HW_NAME="Mac Mini (Late 2018)"
-        elif [ "${HW_MODEL}" == "Macmini9,1" ]; then
+        elif [ "${HW_MODEL}" = "Macmini9,1" ]; then
             HW_NAME="Mac Mini (Late 2020) [M1]"
-        elif [[ "${HW_MODEL}" == Macmini* ]]; then
+        elif [[ "${HW_MODEL}" = Macmini* ]]; then
             HW_NAME="Mac Mini"
         fi
 
         # Mac (Studio)
-        if [ "${HW_MODEL}" == "Mac13,1" ]; then
+        if [ "${HW_MODEL}" = "Mac13,1" ]; then
             HW_NAME="Mac Studio (2022) [M1 Max]"
-        elif [ "${HW_MODEL}" == "Mac13,2" ]; then
+        elif [ "${HW_MODEL}" = "Mac13,2" ]; then
             HW_NAME="Mac Studio (2022) [M1 Ultra]"
         fi
 
         # MacPro
-        if [ "${HW_MODEL}" == "MacPro6,1" ]; then
+        if [ "${HW_MODEL}" = "MacPro6,1" ]; then
             HW_NAME="Mac Pro (Late 2013) [TrashCan]"
-        elif [ "${HW_MODEL}" == "MacPro7,1" ]; then
+        elif [ "${HW_MODEL}" = "MacPro7,1" ]; then
             HW_NAME="Mac Pro (2019) [Lattice]"
-        elif [[ "${HW_MODEL}" == MacPro* ]]; then
+        elif [[ "${HW_MODEL}" = MacPro* ]]; then
             HW_NAME="Mac Pro"
         fi
 
         # iMac
-        if [ "${HW_MODEL}" == "iMac19,1" ]; then
+        if [ "${HW_MODEL}" = "iMac19,1" ]; then
             HW_NAME="iMac (Early 2019)"
-        elif [ "${HW_MODEL}" == "iMac19,2" ]; then
+        elif [ "${HW_MODEL}" = "iMac19,2" ]; then
             HW_NAME="iMac (Early 2019)"
-        elif [ "${HW_MODEL}" == "iMac20,1" ]; then
+        elif [ "${HW_MODEL}" = "iMac20,1" ]; then
             HW_NAME="iMac (Mid 2020)"
-        elif [ "${HW_MODEL}" == "iMac20,2" ]; then
+        elif [ "${HW_MODEL}" = "iMac20,2" ]; then
             HW_NAME="iMac (Mid 2020)"
-        elif [ "${HW_MODEL}" == "iMac21,1" ]; then
+        elif [ "${HW_MODEL}" = "iMac21,1" ]; then
             HW_NAME="iMac (2021) [M1]"
-        elif [ "${HW_MODEL}" == "iMac21,2" ]; then
+        elif [ "${HW_MODEL}" = "iMac21,2" ]; then
             HW_NAME="iMac (2021) [M1]"
-        elif [[ "${HW_MODEL}" == iMac* ]]; then
+        elif [[ "${HW_MODEL}" = iMac* ]]; then
             HW_NAME="iMac"
         fi
         
         # other hardware I just do not care about
-        if [[ "${HW_MODEL}" == MacBookPro* ]]; then
+        if [[ "${HW_MODEL}" = MacBookPro* ]]; then
             HW_NAME="MacBook Pro"
-        elif [[ "${HW_MODEL}" == MacBookAir* ]]; then
+        elif [[ "${HW_MODEL}" = MacBookAir* ]]; then
             HW_NAME="MacBook Air"
-        elif [[ "${HW_MODEL}" == MacBook* ]]; then
+        elif [[ "${HW_MODEL}" = MacBook* ]]; then
             HW_NAME="MacBook"
         fi
 
