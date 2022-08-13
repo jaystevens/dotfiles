@@ -601,9 +601,10 @@ fi
 # if the dircolors utility is available, set that up to
 #dircolors="$(type -P gdircolors dircolors | head -1)"
 # find dircolor or gdircolors on macOS
-dircolors=$(which dircolors 2>/dev/null)
+# use 'env which' because ksh which is broke
+dircolors=$(env which dircolors 2>/dev/null)
 if [ -n "$dircolors" ]; then
-    dircolors=$(which gdircolors 2>/dev/null)
+    dircolors=$(env which gdircolors 2>/dev/null)
 fi
 if [ -n "$dircolors" ]; then
     COLORS=/etc/DIR_COLORS
