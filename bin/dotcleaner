@@ -15,9 +15,11 @@ except:
         print('python2 built-in os.walk is very slow\nconsider installing scandir module or upgrading to python3.5+')
 
 
-def dotcleaner(folder_path, dry_run=False):
+def dotcleaner(folder_path, dry_run=False, no_walk=False):
     files_to_delete = []
     dirs_to_delete = []
+
+    folder_path_orig = folder_path
 
     if folder_path is None:
         print('please provide as path')
@@ -30,26 +32,54 @@ def dotcleaner(folder_path, dry_run=False):
         print('path does not exist: {}'.format(folder_path))
         return
 
-    try:
-        for (root, dirs, files) in scanner(folder_path):
-            for f_name in files:
-                #f_name_lower = f_name.lower()
-                if f_name == '.DS_Store':
-                    files_to_delete.append(os.path.join(root, f_name))
-                elif f_name == '._.DS_Store':
-                    files_to_delete.append(os.path.join(root, f_name))
-                elif f_name.startswith('._'):
-                    files_to_delete.append(os.path.join(root, f_name))
-                elif f_name == 'Thumbs.db':
-                    files_to_delete.append(os.path.join(root, f_name))
+    if not os.path.isdir(folder_path):
+        print('path is not a directory: {}'.format(folder_path))
+        return
 
-            for d_name in dirs:
-                if d_name == '@eaDir':
-                    dirs_to_delete.append(os.path.join(root, d_name))
+    print('cleaning: {}'.format(folder_path))
 
-    except (OSError):
-        print('error accessing directory')
-        sys.exit()
+    if no_walk is True:
+        # single dir mode
+        try:
+            dir_list = os.listdir(folder_path)
+            for x_name in dir_list:
+                if os.path.isfile(os.path.join(folder_path, x_name)):
+                    if x_name == '.DS_Store':
+                        files_to_delete.append(os.path.join(folder_path, x_name))
+                    elif x_name == '._.DS_Store':
+                        files_to_delete.append(os.path.join(folder_path, x_name))
+                    elif x_name.startswith('._'):
+                        files_to_delete.append(os.path.join(folder_path, x_name))
+                    elif x_name == 'Thumbs.db':
+                        files_to_delete.append(os.path.join(folder_path, x_name))
+                elif os.path.isdir(os.path.join(folder_path, x_name)):
+                    if x_name == '@eaDir':
+                        dirs_to_delete.append(os.path.join(folder_path, d_name))
+        except (OSError):
+            print('error accessing directory')
+            sys.exit()
+    else:
+        # walk mode, i.e. recursion
+        try:
+            for (root, dirs, files) in scanner(folder_path):
+                for f_name in files:
+                    #f_name_lower = f_name.lower()
+                    if f_name == '.DS_Store':
+                        files_to_delete.append(os.path.join(root, f_name))
+                    elif f_name == '._.DS_Store':
+                        files_to_delete.append(os.path.join(root, f_name))
+                    elif f_name.startswith('._'):
+                        files_to_delete.append(os.path.join(root, f_name))
+                    elif f_name == 'Thumbs.db':
+                        files_to_delete.append(os.path.join(root, f_name))
+
+                for d_name in dirs:
+                    if d_name == '@eaDir':
+                        dirs_to_delete.append(os.path.join(root, d_name))
+
+        except (OSError):
+            print('error accessing directory')
+            sys.exit()
 
     files_to_delete = sorted(files_to_delete, key=lambda s: s.lower())
     dirs_to_delete = sorted(dirs_to_delete, key=lambda s: s.lower())
@@ -61,6 +91,23 @@ def dotcleaner(folder_path, dry_run=False):
         txt_prefix = 'removing'
 
     for item in files_to_delete:
+        dir_path = None
+        try:
+            dir_path = os.path.abspath(os.path.join(item, os.pardir))
+        except:
+            print('error getting parent directory: {}'.format(item))
+            dir_path = None
+
+        dir_times = None
+        if dir_path is not None:
+            try:
+                dir_stat = os.stat(dir_path)
+                dir_times = (dir_stat.st_atime, dir_stat.st_mtime)
+                del dir_stat
+            except:
+                print('unable to get parent directory atime/mtime: {}'.format(dir_path))
+                dir_times = None
+
         try:
             print('{}: {}'.format(txt_prefix, item))
             if dry_run is False:
@@ -69,7 +116,32 @@ def dotcleaner(folder_path, dry_run=False):
             print('error removing: {}'.format(item))
             #traceback.print_exc()
 
+        if (dir_path is not None) and (dir_times is not None):
+            try:
+                if dry_run is False:
+                    os.utime(dir_path, dir_times)
+            except:
+                print('unable to set parent directory atime/mtime: {}'.format(dir_path))
+
+
     for item in dirs_to_delete:
+        dir_path = None
+        try:
+            dir_path = os.path.abspath(os.path.join(item, os.pardir))
+        except:
+            print('error getting parent directory: {}'.format(item))
+            dir_path = None
+
+        dir_times = None
+        if dir_path is not None:
+            try:
+                dir_stat = os.stat(dir_path)
+                dir_times = (dir_stat.st_atime, dir_stat.st_mtime)
+                del dir_stat
+            except:
+                print('unable to get parent directory atime/mtime: {}'.format(dir_path))
+                dir_times = None
+
         try:
             print('{} dir: {}'.format(txt_prefix, item))
             if dry_run is False:
@@ -78,15 +150,39 @@ def dotcleaner(folder_path, dry_run=False):
             print('error removing: {}'.format(item))
             #traceback.print_exc()
 
+        if (dir_path is not None) and (dir_times is not None):
+            try:
+                if dry_run is False:
+                    os.utime(dir_path, dir_times)
+            except:
+                print('unable to set parent directory atime/mtime: {}'.format(dir_path))
+
+
+class ExtendAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        items = getattr(namespace, self.dest) or []
+        items.extend(values)
+        setattr(namespace, self.dest, items)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='dotcleaner', epilog='deletes .DS_Store and ._ files, also removes @eaDir folders')
-    parser.add_argument('-p', '--path', dest='path', default=None, help='path to clean', required=True)
+    parser.register('action', 'extend', ExtendAction)
+    parser.add_argument('-p', '--path', dest='path', default=[], nargs='+', action='extend', help='path to clean', required=False)
     parser.add_argument('-n', '--dry-run', dest='dryrun', default=False, action='store_true', help='dry run (do not remove files)')
+    parser.add_argument('-s', '--single', dest='single', default=False, action='store_true', help='single directory mode, do not recurse into sub folders')
 
-    args = parser.parse_args()
+    #args = parser.parse_args()
+    args, unk = parser.parse_known_args()
+    args.path.extend(unk)
+
+    if len(args.path) == 0:
+        parser.print_help()
+        sys.exit(1)
+
     try:
-        dotcleaner(args.path, args.dryrun)
+        for ipath in args.path:
+            dotcleaner(ipath, args.dryrun, args.single)
     except KeyboardInterrupt:
         print('\n' + 'Byte')
         sys.exit(0)
