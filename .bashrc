@@ -372,6 +372,7 @@ if [ "$USER" = dataman ]; then
     alias chown='sudo /bin/chown'
     alias ln='sudo /bin/ln'
     alias iotop='sudo /usr/sbin/iotop'
+    alias iotop-c='sudo /usr/sbin/iotop-c'
     alias lsof='sudo /usr/sbin/lsof'
     if [ -e "/usr/cvfs/bin/snfsdefrag" ]; then
         alias snfsdefrag="sudo /usr/cvfs/bin/snfsdefrag"
