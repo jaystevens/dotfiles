@@ -393,7 +393,7 @@ fi
 alias iptables-list='iptables -L -nxv --line-numbers -t raw && iptables -L -nxv --line-numbers -t mangle && iptables -L -nxv --line-numbers -t nat && iptables -L -nxv --line-numbers -t filter'
 
 # postgres connections
-alias postgwho='ps -ef | grep -i "postgres: postgres"'
+alias postgwho='ps -ef | grep -i "postgres: postgres" | grep --invert-match "grep"'
 
 # ----------------------------------------------------------------------
 # BASH COMPLETION
