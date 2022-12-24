@@ -1,0 +1,14 @@
+#!/bin/sh
+# Usage: latest-awscli
+# Grabs the latest version of AWS CLI
+# and puts its in your HOME/bin.
+set -e
+if [ ! -d ~/.download_aws ]; then
+    mkdir  ~/.download_aws/
+fi
+curl -Lo ~/.download_aws/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+cd ~/.download_aws/
+unzip awscliv2.zip
+./aws/install --update -i ~/.aws-install -b ~/bin
+rm -rf ~/.download_aws
+aws --version

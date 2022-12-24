@@ -372,6 +372,7 @@ if [ "$USER" = dataman ]; then
     alias chown='sudo /bin/chown'
     alias ln='sudo /bin/ln'
     alias iotop='sudo /usr/sbin/iotop'
+    alias iotop-c='sudo /usr/sbin/iotop-c'
     alias lsof='sudo /usr/sbin/lsof'
     if [ -e "/usr/cvfs/bin/snfsdefrag" ]; then
         alias snfsdefrag="sudo /usr/cvfs/bin/snfsdefrag"
@@ -393,7 +394,7 @@ fi
 alias iptables-list='iptables -L -nxv --line-numbers -t raw && iptables -L -nxv --line-numbers -t mangle && iptables -L -nxv --line-numbers -t nat && iptables -L -nxv --line-numbers -t filter'
 
 # postgres connections
-alias postgwho='ps -ef | grep -i "postgres: postgres"'
+alias postgwho='ps -ef | grep -i "postgres: postgres" | grep --invert-match "grep"'
 
 # ----------------------------------------------------------------------
 # BASH COMPLETION
