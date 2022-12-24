@@ -43,6 +43,7 @@ ignore_fs = [
         'fuse.jetbrains-toolbox',
         'tracefs',
         'fuse.vmware-vmblock',
+        'fuse.FlexNetFs',
         'ramfs',
         ]
 deviceLenList = [0]
