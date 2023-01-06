@@ -306,9 +306,10 @@ alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file --compress
 alias rsyncvm='rsync -avrh --progress --stats --whole-file --sparse'
 alias rsyncsyno='rsync -rltD -v -r -h --progress --stats --inplace --whole-file --compress-level=0'
 alias bashver='echo $BASH_VERSION'
-alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.fdn.ad"
-alias sshmdc01="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc01.fdn.ad"
-alias sshmdc02="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc02.fdn.ad"
+# ssh aliases for clustered machines that the host key changes
+#alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.fdn.ad"
+alias sshmdc01="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc01"
+alias sshmdx02="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdx01"
 
 # sernet samba
 if [ -e '/etc/init.d/sernet-samba-smbd' ]; then
