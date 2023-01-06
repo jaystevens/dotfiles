@@ -305,8 +305,6 @@ alias df='df -Ph'
 alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
 alias rsyncvm='rsync -avrh --progress --stats --whole-file --sparse'
 alias rsyncsyno='rsync -rltD -v -r -h --progress --stats --inplace --whole-file --compress-level=0'
-alias wizmnt='sshfs -o Cipher="aes128-ctr" root@wizardofthenet.com:/home/ghosttoast/www/www/'
-alias uwizmnt='fusermount -u'
 alias bashver='echo $BASH_VERSION'
 alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.fdn.ad"
 alias sshmdc01="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc01.fdn.ad"
