@@ -302,9 +302,13 @@ fi
 alias fn='find . -iname'
 alias hi='history | tail -20'
 alias df='df -Ph'
-alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
+#alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
+alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file'
 alias rsyncvm='rsync -avrh --progress --stats --whole-file --sparse'
-alias rsyncsyno='rsync -rltD -v -r -h --progress --stats --inplace --whole-file --compress-level=0'
+# rsyncsyno info: -a = -rlptgoD, rsyncsyno removes: -p (--perms), -g (--group), -o (--owner)
+# synologys server side ACL's prevent setting group and owner(throws an error), and permissions are silently ignored
+#alias rsyncsyno='rsync -rltD -v -r -h --progress --stats --inplace --whole-file --compress-level=0'
+alias rsyncsyno='rsync -rltDvh --progress --stats --inplace --whole-file'
 alias bashver='echo $BASH_VERSION'
 # ssh aliases for clustered machines that the host key changes
 #alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.fdn.ad"
