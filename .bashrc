@@ -313,7 +313,7 @@ alias bashver='echo $BASH_VERSION'
 # ssh aliases for clustered machines that the host key changes
 #alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.fdn.ad"
 alias sshmdc01="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc01"
-alias sshmdx02="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdx01"
+alias sshmdx01="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdx01"
 
 # sernet samba
 if [ -e '/etc/init.d/sernet-samba-smbd' ]; then
