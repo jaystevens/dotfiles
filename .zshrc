@@ -370,15 +370,18 @@ fi
 alias fn='find . -iname'
 alias hi='history | tail -20'
 alias df='df -Ph'
-alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
+#alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file --compress-level=0'
+alias rsyncjay='rsync -avrh --progress --stats --inplace --whole-file'
 alias rsyncvm='rsync -avrh --progress --stats --whole-file --sparse'
-alias rsyncsyno='rsync -rltD -v -r -h --progress --stats --inplace --whole-file --compress-level=0'
-alias wizmnt='sshfs -o Cipher="aes128-ctr" root@wizardofthenet.com:/home/ghosttoast/www/www/'
-alias uwizmnt='fusermount -u'
+# rsyncsyno info: -a = -rlptgoD, rsyncsyno removes: -p (--perms), -g (--group), -o (--owner)
+# synologys server side ACL's prevent setting group and owner(throws an error), and permissions are silently ignored
+#alias rsyncsyno='rsync -rltD -v -r -h --progress --stats --inplace --whole-file --compress-level=0'
+alias rsyncsyno='rsync -rltDvh --progress --stats --inplace --whole-file'
 alias bashver='echo $BASH_VERSION'
-alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.fdn.ad"
-alias sshmdc01="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc01.fdn.ad"
-alias sshmdc02="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc02.fdn.ad"
+# ssh aliases for clustered machines that the host key changes
+#alias sshice="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' ice.fdn.ad"
+alias sshmdc01="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdc01"
+alias sshmdx01="ssh -o 'UserKnownHostsFile /dev/null' -o 'StrictHostKeyChecking no' stornext@mdx01"
 
 # sernet samba
 if [ -e '/etc/init.d/sernet-samba-smbd' ]; then
@@ -440,6 +443,7 @@ if [ "$USER" = dataman ]; then
     alias chown='sudo /bin/chown'
     alias ln='sudo /bin/ln'
     alias iotop='sudo /usr/sbin/iotop'
+    alias iotop-c='sudo /usr/sbin/iotop-c'
     alias lsof='sudo /usr/sbin/lsof'
     if [ -e "/usr/cvfs/bin/snfsdefrag" ]; then
         alias snfsdefrag="sudo /usr/cvfs/bin/snfsdefrag"
@@ -461,7 +465,7 @@ fi
 alias iptables-list='iptables -L -nxv --line-numbers -t raw && iptables -L -nxv --line-numbers -t mangle && iptables -L -nxv --line-numbers -t nat && iptables -L -nxv --line-numbers -t filter'
 
 # postgres connections
-alias postgwho='ps -ef | grep -i "postgres: postgres"'
+alias postgwho='ps -ef | grep -i "postgres: postgres" | grep --invert-match "grep"'
 
 # ----------------------------------------------------------------------
 # ZSH COMPLETION
@@ -736,6 +740,10 @@ if [ $UNAME = "Darwin" ]; then
             HW_NAME="Mac Mini (Late 2018)"
         elif [ "${HW_MODEL}" = "Macmini9,1" ]; then
             HW_NAME="Mac Mini (Late 2020) [M1]"
+        elif [ "${HW_MODEL}" = "Mac14,12" ]; then
+            HW_NAME="Mac Mini (2023) [M2 Pro]"
+        elif [ "${HW_MODEL}" = "Mac14,3" ]; then
+            HW_NAME="Mac Mini (2023) [M2]"
         elif [[ "${HW_MODEL}" = Macmini* ]]; then
             HW_NAME="Mac Mini"
         fi
@@ -748,7 +756,11 @@ if [ $UNAME = "Darwin" ]; then
         fi
 
         # MacPro
-        if [ "${HW_MODEL}" = "MacPro6,1" ]; then
+        if [ "${HW_MODEL}" = "MacPro4,1" ]; then
+            HW_NAME="Mac Pro (Early 2009)"
+        elif [ "${HW_MODEL}" = "MacPro5,1" ]; then
+            HW_NAME="Mac Pro (Mid 2010/Mid 2012)"
+        elif [ "${HW_MODEL}" = "MacPro6,1" ]; then
             HW_NAME="Mac Pro (Late 2013) [TrashCan]"
         elif [ "${HW_MODEL}" = "MacPro7,1" ]; then
             HW_NAME="Mac Pro (2019) [Lattice]"
