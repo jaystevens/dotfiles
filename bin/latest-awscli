@@ -3,12 +3,96 @@
 # Grabs the latest version of AWS CLI
 # and puts its in your HOME/bin.
 set -e
-if [ ! -d ~/.download_aws ]; then
-    mkdir  ~/.download_aws/
+
+if [ $(uname) = "Darwin" ]; then
+    # MacOS
+
+    # make temp download folder
+    if [ ! -d ~/.download_aws ]; then
+        mkdir ~/.download_aws
+    fi
+
+    # download awscli installer pkg
+    curl -Lo ~/.download_aws/AWSCLIV2.pkg "https://awscli.amazonaws.com/AWSCLIV2.pkg"
+
+    # change to temp download folder
+    cd ~/.download_aws/
+
+    # make install folder, the pkg installer will not create it
+    if [ ! -d ~/.aws-install ]; then
+        mkdir ~/.aws-install
+    fi
+
+    # write choices.xml, pkg is GUI based, this bypasses the GUI
+    cat << 'EOF' > ./choices.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <array>
+    <dict>
+      <key>choiceAttribute</key>
+      <string>customLocation</string>
+      <key>attributeSetting</key>
+      <string>${HOME}/.aws-install</string>
+      <key>choiceIdentifier</key>
+      <string>default</string>
+    </dict>
+  </array>
+</plist>
+EOF
+
+    # run intaller pkg
+    installer -pkg ./AWSCLIV2.pkg -target CurrentUserHomeDirectory -applyChoiceChangesXML choices.xml
+
+    # link installed to ~/bin/
+    ln -s ${HOME}/.aws-install/aws-cli/aws ~/bin/aws
+    ln -s ${HOME}/.aws-install/aws-cli/aws_completer ~/bin/aws_completer
+
+    # delete temp download folder
+    rm -rf ~/.download_aws
+
+    # run awscli
+    aws --version
+else
+    # Linux
+
+    # check for unzip command
+    HAVE_UNZIP=$(command -v unzip)
+    if [ -n "$HAVE_UNZIP" ]; then
+        DO_SOMETHING=0
+    else
+        echo "unzip is required to unpack awscli, please install it.\n    yum install unzip\n    apt install unzip"
+        exit 1
+    fi
+
+    HAVE_CURL=$(command -v curl)
+    if [ -n "$HAVE_CURL" ]; then
+        DO_SOMETHING=0
+    else
+        echo "curl is required to download awscli, please install it.\n    yum install curl\n    apt install curl"
+        exit 1
+    fi
+
+    # make temp download folder
+    if [ ! -d ~/.download_aws ]; then
+        mkdir  ~/.download_aws/
+    fi
+
+    # download zip installer package
+    curl -Lo ~/.download_aws/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+
+    # change to temp download folder
+    cd ~/.download_aws/
+
+    # unzip installer package
+    unzip -q awscliv2.zip
+
+    # install awscli
+    ./aws/install --update -i ~/.aws-install -b ~/bin
+
+    # delete temp download folder
+    rm -rf ~/.download_aws
+
+    # run awscli
+    aws --version
 fi
-curl -Lo ~/.download_aws/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
-cd ~/.download_aws/
-unzip awscliv2.zip
-./aws/install --update -i ~/.aws-install -b ~/bin
-rm -rf ~/.download_aws
-aws --version
