@@ -24,7 +24,7 @@ if [ $(uname) = "Darwin" ]; then
     fi
 
     # write choices.xml, pkg is GUI based, this bypasses the GUI
-    cat << 'EOF' > ./choices.xml
+    cat << EOF > ./choices.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -33,7 +33,7 @@ if [ $(uname) = "Darwin" ]; then
       <key>choiceAttribute</key>
       <string>customLocation</string>
       <key>attributeSetting</key>
-      <string>${HOME}/.aws-install</string>
+      <string>$HOME/.aws-install</string>
       <key>choiceIdentifier</key>
       <string>default</string>
     </dict>
