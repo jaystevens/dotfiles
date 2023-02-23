@@ -810,6 +810,12 @@ if [ -n "$INTERACTIVE" -a -n "$LOGIN" ]; then
     if [ $UNAME = "Darwin" ]; then
         mac_hw_info
         mac_cpu_info
+        if [ "$SHELL" = "/bin/zsh" ]; then
+            if [ -e "${HOME}/.force_bash" ]; then
+                echo "force bash is set, launching bash shell"
+                bash
+            fi
+        fi
     fi
     # this starts/reconnects to a single screen session
     # when you login as dataman
