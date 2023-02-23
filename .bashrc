@@ -1,7 +1,7 @@
 #!/bin/bash
 # A basically sane bash environment.
 #
-# Ryan Tomayko <http://tomayko.com/about> (with help from the internets).
+# Jason Stevens (with help from the internets).
 
 # the basics
 : ${HOME=~}
