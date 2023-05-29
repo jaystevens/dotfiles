@@ -2,6 +2,23 @@
 # Usage: latest-dropbox
 # Grabs the latest version of Dropbox CLI Script
 # and puts its in your HOME/bin.
+
+# make sure we are on linux
+if [ $(uname -o) != "GNU/Linux" ]; then
+    echo "latest-dropbox: only supports linux"
+    exit 1
+fi
+# make sure we are on 64-bit machine
+if [ $(uname -m) = "aarch64" ]; then
+    echo "latest-dropbox: aarch64 is not supported"
+    exit 1
+fi
+if [ $(uname -m) = "armhf" ]; then
+    echo "latest-dropbox: armhf is not supported"
+    exit 1
+fi
+
+
 set -e
 curl -sLo ~/bin/dropbox1 https://www.dropbox.com/download?dl=packages/dropbox.py
 sed 's/#!\/usr\/bin\/python/#!\/bin\/env python/g' ~/bin/dropbox1 > ~/bin/dropbox

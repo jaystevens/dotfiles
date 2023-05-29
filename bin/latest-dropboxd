@@ -2,6 +2,23 @@
 # Usage: latest-dropboxd
 # Grabs the latest version of Dropbox command line
 # and puts its in your HOME/bin.
+
+# make sure we are on linux
+if [ $(uname -o) != "GNU/Linux" ]; then
+    echo "latest-dropboxd: only supports linux"
+    exit 1
+fi
+# make sure we are on 64-bit machine
+if [ $(uname -m) = "aarch64" ]; then
+    echo "latest-dropboxd: aarch64 is not supported"
+    exit 1
+fi
+if [ $(uname -m) = "armhf" ]; then
+    echo "latest-dropboxd: armhf is not supported"
+    exit 1
+fi
+
+
 set -e
 if [ `uname -m` = 'x86_64' ]; then
     echo 64 bit
