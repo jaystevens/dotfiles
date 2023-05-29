@@ -79,7 +79,15 @@ else
     fi
 
     # download zip installer package
-    curl -Lo ~/.download_aws/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    if [ $(uname -m) = "armhf" ]; then
+        echo "armhf is not supported"
+        exit 1
+    fi
+    if [ $(uname -m) = "aarch64" ]; then
+        curl -Lo ~/.download_aws/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"
+    else
+        curl -Lo ~/.download_aws/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    fi
 
     # change to temp download folder
     cd ~/.download_aws/
