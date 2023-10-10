@@ -551,6 +551,13 @@ if [ $UNAME = "Darwin" ]; then
         fi
         
         echo "Mac CPU: ${MAC_CPU}"
+        
+        MAC_CPU_MODEL=$(sysctl -n machdep.cpu.brand_string 2>/dev/null)
+        echo "Mac CPU Model: ${MAC_CPU_MODEL}"
+        
+        MAC_CPU_CORE=$(sysctl -n machdep.cpu.core_count 2>/dev/null)
+        MAC_CPU_THREAD=$(sysctl -n machdep.cpu.thread_count 2>/dev/null)
+        echo "Mac CPU Core/Thread: ${MAC_CPU_CORE}/${MAC_CPU_THREAD}"
     }
     
     mac_hw_info () {
