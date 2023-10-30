@@ -581,6 +581,8 @@ if [ $UNAME = "Darwin" ]; then
             HW_NAME="Mac Mini (2023) [M2 Pro]"
         elif [ "${HW_MODEL}" = "Mac14,3" ]; then
             HW_NAME="Mac Mini (2023) [M2]"
+        elif [ "${HW_MODEL}" = "Mac14,12" ]; then
+            HW_NAME="Mac Mini (2023) [M2 Pro]"
         elif [[ "${HW_MODEL}" = Macmini* ]]; then
             HW_NAME="Mac Mini"
         fi
@@ -590,6 +592,10 @@ if [ $UNAME = "Darwin" ]; then
             HW_NAME="Mac Studio (2022) [M1 Max]"
         elif [ "${HW_MODEL}" = "Mac13,2" ]; then
             HW_NAME="Mac Studio (2022) [M1 Ultra]"
+        elif [ "${HW_MODEL}" = "Mac14,13" ]; then
+            HW_NAME="Mac Studio (2023) [M2 Max]"
+        elif [ "${HW_MODEL}" = "Mac14,14" ]; then
+            HW_NAME="Mac Studio (2023) [M2 Ultra]"
         fi
 
         # MacPro
@@ -600,7 +606,9 @@ if [ $UNAME = "Darwin" ]; then
         elif [ "${HW_MODEL}" = "MacPro6,1" ]; then
             HW_NAME="Mac Pro (Late 2013) [TrashCan]"
         elif [ "${HW_MODEL}" = "MacPro7,1" ]; then
-            HW_NAME="Mac Pro (2019) [Lattice]"
+            HW_NAME="Mac Pro (2019) [Lattice] [Intel]"
+        elif [ "${HW_MODEL}" = "Mac14,8" ]; then
+            HW_NAME="Mac Pro (2023) [Lattice] [M2 Ultra]"
         elif [[ "${HW_MODEL}" = MacPro* ]]; then
             HW_NAME="Mac Pro"
         fi
