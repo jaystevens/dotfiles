@@ -44,6 +44,7 @@ ignore_fs = [
         'tracefs',
         'fuse.vmware-vmblock',
         'fuse.FlexNetFs',
+        'fuse.portal',
         'ramfs',
         ]
 deviceLenList = [0]
