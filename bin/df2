@@ -17,6 +17,8 @@ for line in intxt:
             if a[0].startswith('/dev/loop'):
                 if a[len(a) - 1].strip().lower().startswith('/snap'):
                     continue
+            if a[0].startswith('efivarfs'):
+                continue
 
             # process entry
             a.remove(a[0])
