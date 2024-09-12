@@ -395,6 +395,11 @@ if [ -e '/etc/init.d/sernet-samba-smbd' ]; then
     alias sernet-wb-restart="sernet-wb-stop;sleep 2;sernet-wb-start"
 fi
 
+# macos un-quarantine alias
+if [ $UNAME = "Darwin" ]; then
+    alias macunblock="xattr -d com.apple.quarantine"
+fi
+
 # alias spotlight control
 if [ $UNAME = "Darwin" ]; then
     alias spotlight-off="sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
