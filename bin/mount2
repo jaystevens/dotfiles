@@ -115,6 +115,8 @@ for line in intxt:
             if a[4] == 'fuse':
                 if a[2].startswith('/tmp/.vnc'):
                     continue
+                if a[2].startswith('/run/user/') and a[2].endswith('/doc'):
+                    continue
 
             mount_device = a[0].strip()
             mount_path = a[2].strip()
