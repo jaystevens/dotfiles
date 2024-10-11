@@ -1,0 +1,94 @@
+#!/bin/sh
+# Usage: latest-speedtest-ookla
+# Grabs the latest version of OOKLA speedtest (CLI)
+# and puts its in your HOME/bin.
+# 
+# OOKLA does not have "latest" URL tags, so we hardcod the version, but they rarely change
+#
+set -e
+
+SPEEDTEST_URL_MACOS="https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-macosx-universal.tgz"
+SPEEDTEST_URL_LINUX_X64="https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz"
+SPEEDTEST_URL_LINUX_ARMHF="https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-armhf.tgz"
+SPEEDTEST_URL_LINUX_AARCH64="https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-aarch64.tgz"
+
+if [ $(uname) = "Darwin" ]; then
+    # MacOS
+
+    # make temp download folder
+    if [ ! -d ~/.download_speedtest ]; then
+        mkdir ~/.download_speedtest
+    fi
+
+    # download awscli installer pkg
+    curl -Lo ~/.download_speeedtest/speedtest.tgz ${SPEEDTEST_URL_MACOS}
+
+    # change to temp download folder
+    cd ~/.download_speedtest/
+
+    # extract tgz
+    tar -xf speedtest.tgz
+
+    # copy to ~/bin/
+    cp -f ./speedtest ~/bin/speedtest
+
+    # cd ~
+    cd ~
+
+    # delete temp download folder
+    rm -rf ~/.download_speedtest
+
+    # run speedtest
+    speedtest --version
+else
+    # Linux
+
+    # check for unzip command
+    HAVE_UNZIP=$(command -v unzip)
+    if [ -n "$HAVE_UNZIP" ]; then
+        DO_SOMETHING=0
+    else
+        echo "unzip is required to unpack awscli, please install it.\n    yum install unzip\n    apt install unzip"
+        exit 1
+    fi
+
+    HAVE_CURL=$(command -v curl)
+    if [ -n "$HAVE_CURL" ]; then
+        DO_SOMETHING=0
+    else
+        echo "curl is required to download awscli, please install it.\n    yum install curl\n    apt install curl"
+        exit 1
+    fi
+
+    # make temp download folder
+    if [ ! -d ~/.download_speedtest ]; then
+        mkdir  ~/.download_speedtest/
+    fi
+
+    # download zip installer package
+    if [ $(uname -m) = "armhf" ]; then
+        curl -Lo ~/.download_speedtest/speedtest.tgz ${SPEEDTEST_URL_LINUX_ARMHF}
+    fi
+    if [ $(uname -m) = "aarch64" ]; then
+        curl -Lo ~/.download_speedtest/speedtest.tgz ${SPEEDTEST_URL_LINUX_AARCH64}
+    else
+        curl -Lo ~/.download_speedtest/speedtest.tgz ${SPEEDTEST_URL_LINUX_X64}
+    fi
+
+    # change to temp download folder
+    cd ~/.download_speedtest/
+
+    # extract tgz
+    tar -xf ./speedtest.tgz
+
+    # install awscli
+    cp -f ./speedtest ~/bin/
+
+    # cd ~
+
+    # delete temp download folder
+    rm -rf ~/.download_speedtest
+
+    # run speedtest
+    speedtest --version
+fi
