@@ -21,7 +21,7 @@ if [ $(uname) = "Darwin" ]; then
     fi
 
     # download awscli installer pkg
-    curl -Lo ~/.download_speeedtest/speedtest.tgz ${SPEEDTEST_URL_MACOS}
+    curl -Lo ~/.download_speedtest/speedtest.tgz ${SPEEDTEST_URL_MACOS}
 
     # change to temp download folder
     cd ~/.download_speedtest/
