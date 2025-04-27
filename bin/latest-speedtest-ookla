@@ -20,7 +20,7 @@ if [ $(uname) = "Darwin" ]; then
         mkdir ~/.download_speedtest
     fi
 
-    # download awscli installer pkg
+    # download ookla speedtest cli
     curl -Lo ~/.download_speedtest/speedtest.tgz ${SPEEDTEST_URL_MACOS}
 
     # change to temp download folder
@@ -43,15 +43,7 @@ if [ $(uname) = "Darwin" ]; then
 else
     # Linux
 
-    # check for unzip command
-    HAVE_UNZIP=$(command -v unzip)
-    if [ -n "$HAVE_UNZIP" ]; then
-        DO_SOMETHING=0
-    else
-        echo "unzip is required to unpack awscli, please install it.\n    yum install unzip\n    apt install unzip"
-        exit 1
-    fi
-
+    # check for curl command
     HAVE_CURL=$(command -v curl)
     if [ -n "$HAVE_CURL" ]; then
         DO_SOMETHING=0
@@ -65,7 +57,7 @@ else
         mkdir  ~/.download_speedtest/
     fi
 
-    # download zip installer package
+    # # download ookla speedtest cli
     if [ $(uname -m) = "armhf" ]; then
         curl -Lo ~/.download_speedtest/speedtest.tgz ${SPEEDTEST_URL_LINUX_ARMHF}
     fi
@@ -81,7 +73,7 @@ else
     # extract tgz
     tar -xf ./speedtest.tgz
 
-    # install awscli
+    # install speedtest
     cp -f ./speedtest ~/bin/
 
     # cd ~
