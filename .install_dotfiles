@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [ $(uname) == "Darwin" ]; then
-    echo "macOS is not supported by the install_dotfiles script"
-    exit 1
-fi
+#if [ $(uname) == "Darwin" ]; then
+#    echo "macOS is not supported by the install_dotfiles script"
+#    exit 1
+#fi
 
 if [ -e ~/.install_dotfiles ]; then
     echo "dotfiles already installed!"
@@ -16,7 +16,13 @@ if [ ! -e ~/.install_dotfiles_perm ]; then
 fi
 
 # get home folder permissions
-HOME_FOLDER_PERM=`stat -c '%a' ~/`
+if [ $(uname) == "Darwin" ]; then
+    # macOS
+    HOME_FOLDER_PERM=`stat -f '%Lp' ~/`
+else
+    # linux / unix
+    HOME_FOLDER_PERM=`stat -c '%a' ~/`
+fi
 if [ ! ${#HOME_FOLDER_PERM} -eq 3 ]; then
     echo "could not determine home folder permissions, exiting"
     exit 1
