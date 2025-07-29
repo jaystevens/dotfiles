@@ -48,7 +48,7 @@ else
     if [ -n "$HAVE_CURL" ]; then
         DO_SOMETHING=0
     else
-        echo "curl is required to download awscli, please install it.\n    yum install curl\n    apt install curl"
+        echo "curl is required to download speedtest, please install it.\n    yum install curl\n    apt install curl"
         exit 1
     fi
 
