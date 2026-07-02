@@ -554,17 +554,35 @@ if [ $UNAME = "Darwin" ]; then
         elif [ "${MAC_CPU_TYPE}" = "arm64" ]; then
             MAC_CPU="AppleSilicon"
         fi
-        
+
         echo "Mac CPU: ${MAC_CPU}"
-        
+
         MAC_CPU_MODEL=$(sysctl -n machdep.cpu.brand_string 2>/dev/null)
         echo "Mac CPU Model: ${MAC_CPU_MODEL}"
-        
+
         MAC_CPU_CORE=$(sysctl -n machdep.cpu.core_count 2>/dev/null)
         MAC_CPU_THREAD=$(sysctl -n machdep.cpu.thread_count 2>/dev/null)
         echo "Mac CPU Core/Thread: ${MAC_CPU_CORE}/${MAC_CPU_THREAD}"
+
+        MAC_CPU_PERF_0_CNT=$(sysctl -n hw.perflevel0.physicalcpu 2>/dev/null)
+        MAC_CPU_PERF_0_NAME=$(sysctl -n hw.perflevel0.name 2>/dev/null)
+        MAC_CPU_PERF_1_CNT=$(sysctl -n hw.perflevel1.physicalcpu 2>/dev/null)
+        MAC_CPU_PERF_1_NAME=$(sysctl -n hw.perflevel1.name 2>/dev/null)
+        # Intel CPU does not have hw.perflevel0.name, if empty set to Performance
+        if [[ -z "${MAC_CPU_PERF_0_NAME}" ]]; then
+            MAC_CPU_PERF_0_NAME="Performance"
+        fi
+        MAC_CPU_PERF="${MAC_CPU_PERF_0_CNT} ${MAC_CPU_PERF_0_NAME}"
+        # add perflevel1 if available
+        if [[ -n "$MAC_CPU_PERF_1_TYPE" ]]; then
+            MAC_CPU_PERF="${MAC_CPU_PERF} / ${MAC_CPU_PERF_1_CNT} ${MAC_CPU_PERF_1_NAME}"
+        fi
+        echo "Mac CPU Core Types: ${MAC_CPU_PERF}"
+
+        MAC_MEM_SIZE=$(($(sysctl -n hw.memsize 2>/dev/null) / 1024 / 1024 / 1024))
+        echo "Mac Memory: ${MAC_MEM_SIZE} GB"
     }
-    
+
     mac_hw_info () {
         # print mac hardware and hw.model
         HW_MODEL=$(sysctl -n hw.model 2>/dev/null)
@@ -650,7 +668,7 @@ if [ $UNAME = "Darwin" ]; then
         elif [[ "${HW_MODEL}" = iMac* ]]; then
             HW_NAME="iMac"
         fi
-        
+
         # other hardware I just do not care about
         if [[ "${HW_MODEL}" = MacBookPro* ]]; then
             HW_NAME="MacBook Pro"
